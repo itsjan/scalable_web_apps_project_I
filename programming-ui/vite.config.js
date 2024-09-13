@@ -1,12 +1,9 @@
 // vite.config.js
 const config = {
   //...
-  optimizeDeps: {
-    exclude: [
-      "prism-code-editor/web-component",
-      "cprism-code-editor",
-    ],
-  },
+  //optimizeDeps: {
+  //  exclude: ["prism-code-editor/web-component", "prism-code-editor"],
+  //},
   //...
 };
 

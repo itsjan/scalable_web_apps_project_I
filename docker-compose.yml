@@ -13,6 +13,14 @@ services:
       - programming-ui
     ports:
       - 7800:7800
+  
+  redis:
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    expose:
+      - 6379
 
   programming-api:
     build: programming-api
@@ -23,9 +31,12 @@ services:
       - ./app-cache/:/app-cache
     expose:
       - 7777
+    ports:
+      - 7777:7777
     depends_on:
       - database
       - flyway
+      - redis
     env_file:
       - project.env
 
