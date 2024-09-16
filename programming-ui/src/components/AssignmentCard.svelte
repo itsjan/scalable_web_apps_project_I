@@ -1,18 +1,28 @@
 <script>
-  export let selectedAssignment = null;
   export let assignment;
-  export let selectAssignment;
   export let lastOneCompleted;
+  import {selectedAssignment} from "../stores/selectedAssignment.js";
+
+  let selectedAssignment_value;
+    
+    selectedAssignment.subscribe((value) => {
+        selectedAssignment_value = value;
+    })
+
+
+  const selectAssignment = (assignment) => {
+    selectedAssignment.update(assignment.id);
+  }
 
   $: disabled = assignment.assignment_order > lastOneCompleted + 1;
 </script>
 <div
-  class="bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 {selectedAssignment &&
-  selectedAssignment.id === assignment.id
+  class="bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200 {$selectedAssignment &&
+  selectedAssignment_value === assignment.id
     ? 'ring-2 ring-indigo-500'
     : ''} {disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}"
-  on:click={() => !disabled && selectAssignment(assignment) }
-  on:keypress={() => !disabled && selectAssignment(assignment) }
+  on:click={() => !disabled && selectAssignment(assignment)}
+  on:keypress={() => !disabled && selectAssignment(assignment)}
   role="button"
   tabindex="0"
 >
@@ -28,7 +38,7 @@
   </h3>
   <p class="text-sm text-gray-600">{assignment.handout}</p>
 
-  {#if selectedAssignment && selectedAssignment.id === assignment.id}
+  {#if selectedAssignment_value === assignment.id}
     <div class="absolute top-2 right-2 text-indigo-600">
       <svg
         class="h-5 w-5"

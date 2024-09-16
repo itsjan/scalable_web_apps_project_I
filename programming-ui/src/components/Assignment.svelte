@@ -4,6 +4,7 @@
     import AssignmentSelector from "./AssignmentSelector.svelte";
 
 
+
     let assignments = [];
     let lastOneCompleted = -1;
     let correctSolutions = [];
@@ -23,4 +24,5 @@
 </script>
 
 <AssignmentSelector {assignments} {selectedAssignment} {lastOneCompleted} />
+
 

@@ -1,5 +1,12 @@
 import { serve } from "./deps.js";
 import { grade } from "./services/gradingService.js";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+const codeSubmissionValidator = z.object({
+  assignment: z.number().positive(),
+  user: z.string(),
+  code: z.string(),
+  testCode: z.string(),
+});
 
 let state = -1;
 
@@ -32,22 +39,28 @@ while True:
     `;
   }
 };
-const post_ping  = (req, mappingResult) => { 
-  return new Response("POST PING", { status: 200 })
+const post_ping = (req, mappingResult) => {
+  return new Response("POST PING", { status: 200 });
 };
 
 const post_for_grading = async (req, mappingResult) => {
-  let requestData = {};
+
   try {
-    requestData = await req.json();
+    const result = codeSubmissionValidator.safeParse(await req.json());
+    if (!result.success) {
+      return new Response("Invalid submission", { status: 400 });
+    }
+
+    const { assignment, user, code, testCode } = result.data;
+    console.log(`%c assignment: ${assignment}\nUSER:\n ${user}\n code: \n${code}\n test code:\n ${testCode}\n`, "color: green");
+
   } catch (error) {
     console.log("Error parsing JSON", error);
   }
-  const code = requestData.code || getCode();
-  const testCode = requestData.testCode || "";
-  console.log({ code, testCode });
-  return new Response ("POST FOR GRADING", { status: 200 })
+  // const code = requestData.code || getCode();
+  // const testCode = requestData.testCode || "";
   
+  return new Response("POST FOR GRADING", { status: 200 });
 };
 
 const urlMap = [
@@ -81,7 +94,7 @@ class TestHello(unittest.TestCase):
     self.assertEqual(hello(), "Hello world!", "Function should return 'Hello world!'")
 
 if __name__ == '__main__':
-  unittest.main()  
+  unittest.main()
 `;
 
   return await grade(code, testCode);
@@ -111,17 +124,15 @@ const _del_handleRequest = async (request) => {
   return new Response(JSON.stringify({ result: result }));
 };
 
-
 const handleRequest = async (request) => {
-  console.log(request);
+  //console.log(request);
   const path = new URL(request.url).pathname;
 
   const mapping = urlMap.find(
     (um) => um.method === request.method && um.pattern.test(request.url),
   );
-  console.log({ path, mapping });
-  console.log(`method: ${request.method} url: ${request.url}`);
-
+  console.log (`%c${request.method} ${path}`, "color: blue");
+  
   if (!mapping) {
     return new Response("Not found", { status: 404 });
   }

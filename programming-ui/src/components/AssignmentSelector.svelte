@@ -1,21 +1,27 @@
 <script>
-    import { fade } from 'svelte/transition';
     import { onMount } from 'svelte';
     import AssignmentCard from './AssignmentCard.svelte';
+    import {selectedAssignment} from "../stores/selectedAssignment.js";
 
     export let assignments;
     export let lastOneCompleted;
-    export let selectedAssignment;
+    let selectedAssignment_value;
+    
+    selectedAssignment.subscribe((value) => {
+        selectedAssignment_value = value;
+    })
 
     onMount(() => {
         console.log("AssignmentSelector mounted");
         console.log("Assignments:", assignments);
+        if ( $selectedAssignment === 0){
+          
+
+        }
         
     });
 
-    function selectAssignment(assignment) {
-        selectedAssignment = assignment;
-    }
+
 </script>
 
 <div>
@@ -23,10 +29,10 @@
     {#each assignments as assignment}
       <AssignmentCard
         {assignment}
-        {selectedAssignment}
-        {selectAssignment},
         {lastOneCompleted}
       />
     {/each}
   </div>
 </div>
+
+<p> Selector: Selected assignment: {selectedAssignment_value}</p>
