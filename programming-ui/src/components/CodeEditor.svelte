@@ -30,9 +30,9 @@
 
   const doSimpleGradingDemo = async () => {
     const data = {
-      assignment: assignment_value.id,
+      assignment: assignment_value,
       user: $userUuid,
-      code: "code",
+      code: editor.value,
       testCode: "testi",
     };
 
@@ -55,7 +55,7 @@
 </script>
 
 <h2>Code Editor</h2>
-<p> Selectted assignment : {assignment_value?.id}</p>
+<p> Code editor ... Selected assignment : {assignment_value}</p>
 <button class="btn" on:click={() => console.log(editor.value)}>Log code</button>
 <div bind:this={editorElement} class="editor-container mb-4 rounded shadow"></div>
 

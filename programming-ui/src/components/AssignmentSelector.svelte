@@ -14,10 +14,7 @@
     onMount(() => {
         console.log("AssignmentSelector mounted");
         console.log("Assignments:", assignments);
-        if ( $selectedAssignment === 0){
-          
 
-        }
         
     });
 

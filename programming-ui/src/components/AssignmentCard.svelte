@@ -37,6 +37,7 @@
     {/if}
   </h3>
   <p class="text-sm text-gray-600">{assignment.handout}</p>
+  <p>Selected assignment: {selectedAssignment_value}</p>
 
   {#if selectedAssignment_value === assignment.id}
     <div class="absolute top-2 right-2 text-indigo-600">
@@ -55,3 +56,4 @@
     </div>
   {/if}
 </div>
+
