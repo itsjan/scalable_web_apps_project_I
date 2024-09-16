@@ -1,7 +1,7 @@
 import * as programmingAssignmentService from "./services/programmingAssignmentService.js";
 import { cacheMethodCalls } from "./util/cacheUtil.js";
 import { serve } from "./deps.js";
-import { sql } from "./database/database.js";
+//import { sql } from "./database/database.js";
 
 //const cachedAssignmentsService = cacheMethodCalls(programmingAssignmentService, [
 //  "findAll",
@@ -31,8 +31,25 @@ const _handleRequest = async (request) => {
 const get_assignments = async (req) => {
   try {
     const assignments = await programmingAssignmentService.findAll();
+
     console.log({ assignments });
     return Response.json(assignments);
+  } catch (error) {
+    console.log(error);
+    return new Response("ERROR", { status: 500 });
+  }
+};
+
+const get_assignments_for_user = async (req, mappingResult) => {
+  try {
+    const userId = mappingResult.pathname.groups.userId;
+    const assignments =
+      await programmingAssignmentService.findAllForUser(userId);
+    const lastOneCompleted = (await programmingAssignmentService.lastAssignmentCompletedByUser( userId)) ?? 0;
+    const correctSolutions = await programmingAssignmentService.correctSubmissionsByUser( userId);
+    
+    console.log({ assignments, lastOneCompleted, correctSolutions });
+    return Response.json({ assignments, lastOneCompleted, correctSolutions });
   } catch (error) {
     console.log(error);
     return new Response("ERROR", { status: 500 });
@@ -44,6 +61,11 @@ const urlMap = [
     method: "GET",
     pattern: new URLPattern({ pathname: "/api/assignments" }),
     fn: get_assignments,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({ pathname: "/api/user/:userId/assignments" }),
+    fn: get_assignments_for_user,
   },
 ];
 

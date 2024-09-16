@@ -13,14 +13,8 @@ CREATE TABLE programming_assignment_submissions (
 );
 */
 
-const correctSubmissionsByUser = async (userUuid) => {
-  return await sql`
-    SELECT *
-    FROM programming_assignment_submissions
-    WHERE user_uuid = ${userUuid} AND correct = true
-    ORDER BY programming_assignment_id
-  `;
-};
+
+
 
 
 

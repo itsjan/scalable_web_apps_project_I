@@ -23,11 +23,12 @@
 
 <h2>Code Editor</h2>
 <button class="btn" on:click={() => console.log(editor.value)}>Log code</button>
-<div bind:this={editorElement} class="editor-container"></div>
+<div bind:this={editorElement} class="editor-container mb-4 rounded shadow"></div>
 
 <style>
   .editor-container {
-    height: 30em;
+    height: 10em;
     overflow: hidden;
+    border: 1px solid #ccc;
   }
 </style>
