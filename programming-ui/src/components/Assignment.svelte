@@ -3,36 +3,41 @@
     import { userUuid } from "../stores/stores.js";
     import AssignmentSelector from "./AssignmentSelector.svelte";
     import {selectedAssignment} from "../stores/selectedAssignment.js";
+    import {initAssignments, useAssignmentsStore} from "../stores/assignments.svelte";
+    import AssignmentCard from './AssignmentCard.svelte';
 
     let selectedAssignment_value;
-    
+
     selectedAssignment.subscribe((value) => {
         selectedAssignment_value = value;
-    })
+    });
 
+    const assignmentsStore = useAssignmentsStore();
     let assignments = [];
+    assignmentsStore.subscribe(value => {
+        console.log("Assignments updated:", value);
+        assignments = value;
+    });
+
     let lastOneCompleted = -1;
-    let correctSolutions = [];
-   
 
     onMount(async () => {
-      const response = await fetch(`/api/user/${$userUuid}/assignments`);
-      const data = await response.json();
-      console.log(data)
-      assignments = data.assignments;
-      lastOneCompleted = data.lastOneCompleted[0].max_completed ?? 0;
-
-      if ( selectedAssignment_value === 0 ) {
-        selectedAssignment.update(1);
-        
-      }
-      
-      correctSolutions = data.correctSolutions;
-
-      console.log( "onMount: ", assignments, lastOneCompleted[0], correctSolutions);
+      console.log("onMount start in Assignment.svelte");
+      await initAssignments();
+      console.log("onMount end in Assignment.svelte, assignments:", assignments);
     });
+
+    console.log("Assignment.svelte script executed");
 </script>
 
-<AssignmentSelector {assignments} {lastOneCompleted} />
+{#if assignments.length > 0}
+  {#each assignments as assignment}
+    <p>{assignment.assignment_order} {assignment.title}</p>
+  {/each}
+{:else}
+  <p>No assignments available.</p>
+{/if}
 
 
+
+  <AssignmentSelector />

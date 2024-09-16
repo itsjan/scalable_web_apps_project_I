@@ -1,23 +1,25 @@
 <script>
     import { onMount } from 'svelte';
     import AssignmentCard from './AssignmentCard.svelte';
+    import {useAssignmentsStore} from "../stores/assignments.svelte";
     import {selectedAssignment} from "../stores/selectedAssignment.js";
 
-    export let assignments;
+
+
+
     export let lastOneCompleted;
     let selectedAssignment_value;
-    
+
     selectedAssignment.subscribe((value) => {
         selectedAssignment_value = value;
     })
 
-    onMount(() => {
-        console.log("AssignmentSelector mounted");
-        console.log("Assignments:", assignments);
-
-        
+    const assignmentsStore = useAssignmentsStore();
+    let assignments = [];
+    assignmentsStore.subscribe(value => {
+        console.log("Assignments updated:", value);
+        assignments = value;
     });
-
 
 </script>
 

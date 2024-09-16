@@ -1,7 +1,7 @@
 <script>
   import { fade, scale } from 'svelte/transition';
   import { cubicIn, cubicOut } from 'svelte/easing';
-  import PointsDisplay from '../components/PointsDisplay.svelte';
+  //import PointsDisplay from '../components/PointsDisplay.svelte';
   import { userUuid } from "../stores/stores.js";
 
 
@@ -21,8 +21,9 @@
     <div class="relative flex h-16 items-center justify-between">
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <div class="flex flex-shrink-0 items-center">
-
+<!--
             <span class="h-8 w-auto"><PointsDisplay /></span>
+            -->
         </div>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
