@@ -22,4 +22,6 @@ const correctSubmissionsByUser = async (userUuid) => {
   `;
 };
 
+
+
 export { correctSubmissionsByUser };

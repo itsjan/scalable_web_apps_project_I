@@ -1,9 +1,13 @@
-version: "3.4"
+# version: "3.4"
 
 volumes:
   astro_node_modules:
 
 services:
+  grader-image:
+    build: ./grader-image
+    image: grader-image
+
   nginx:
     image: nginx:latest
     volumes:
@@ -13,7 +17,7 @@ services:
       - programming-ui
     ports:
       - 7800:7800
-  
+
   redis:
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
@@ -62,6 +66,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     expose:
       - 7000
+    depends_on:
+      - grader-image
 
   database:
     container_name: database-server-dab-p1-8ab01ad8-ff1f-47ff-8134-9d0f9f79820e
