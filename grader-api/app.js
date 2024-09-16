@@ -32,6 +32,36 @@ while True:
     `;
   }
 };
+const post_ping  = (req, mappingResult) => { 
+  return new Response("POST PING", { status: 200 })
+};
+
+const post_for_grading = async (req, mappingResult) => {
+  let requestData = {};
+  try {
+    requestData = await req.json();
+  } catch (error) {
+    console.log("Error parsing JSON", error);
+  }
+  const code = requestData.code || getCode();
+  const testCode = requestData.testCode || "";
+  console.log({ code, testCode });
+  return new Response ("POST FOR GRADING", { status: 200 })
+  
+};
+
+const urlMap = [
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/api/grade/ping" }),
+    fn: post_ping,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/api/grade/" }),
+    fn: post_for_grading,
+  },
+];
 
 const gradingDemo = async () => {
   let code = getCode();
@@ -57,7 +87,7 @@ if __name__ == '__main__':
   return await grade(code, testCode);
 };
 
-const handleRequest = async (request) => {
+const _del_handleRequest = async (request) => {
   // the starting point for the grading api grades code following the
   // gradingDemo function, but does not e.g. use code from the user
   let result;
@@ -79,6 +109,25 @@ const handleRequest = async (request) => {
   // or use e.g. a message queue that the grader api would read and process
 
   return new Response(JSON.stringify({ result: result }));
+};
+
+
+const handleRequest = async (request) => {
+  console.log(request);
+  const path = new URL(request.url).pathname;
+
+  const mapping = urlMap.find(
+    (um) => um.method === request.method && um.pattern.test(request.url),
+  );
+  console.log({ path, mapping });
+  console.log(`method: ${request.method} url: ${request.url}`);
+
+  if (!mapping) {
+    return new Response("Not found", { status: 404 });
+  }
+
+  const mappingResult = mapping.pattern.exec(request.url);
+  return await mapping.fn(request, mappingResult);
 };
 
 const portConfig = { port: 7000, hostname: "0.0.0.0" };

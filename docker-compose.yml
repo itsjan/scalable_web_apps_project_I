@@ -66,6 +66,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     expose:
       - 7000
+    ports:
+      - 7001:7000
     depends_on:
       - grader-image
 

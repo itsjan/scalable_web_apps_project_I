@@ -9,7 +9,7 @@
 `,
     };
     
-    const response = await fetch("/api/grade", {
+    const response = await fetch("/api/grade/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -17,9 +17,11 @@
       body: JSON.stringify(data),
     });
 
-    const jsonData = await response.json();
-    console.log(jsonData);
-    alert(JSON.stringify(jsonData));
+    console.log(response);
+
+    //const jsonData = await response.json();
+    //console.log(jsonData);
+    //alert(JSON.stringify(jsonData));
   };
 </script>
 
