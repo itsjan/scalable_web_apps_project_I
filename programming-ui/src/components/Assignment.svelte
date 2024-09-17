@@ -30,14 +30,5 @@
     console.log("Assignment.svelte script executed");
 </script>
 
-{#if assignments.length > 0}
-  {#each assignments as assignment}
-    <p>{assignment.assignment_order} {assignment.title}</p>
-  {/each}
-{:else}
-  <p>No assignments available.</p>
-{/if}
 
-
-
-  <AssignmentSelector />
+<AssignmentSelector />

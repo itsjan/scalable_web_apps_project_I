@@ -1,6 +1,5 @@
 ---
 import Layout from "../layout/Layout.astro";
-import GradingButton from "../components/GradingButton.svelte";
 import Assignment from "../components/Assignment.svelte";
 import CodeEditor from "../components/CodeEditor.svelte";
 ---
@@ -8,5 +7,4 @@ import CodeEditor from "../components/CodeEditor.svelte";
 <Layout>
   <Assignment client:only={"svelte"} />
   <CodeEditor client:only={"svelte"} />
- 
 </Layout>

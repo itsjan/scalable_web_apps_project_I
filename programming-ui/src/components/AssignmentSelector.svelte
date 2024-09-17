@@ -30,5 +30,3 @@
     {/each}
   </div>
 </div>
-
-<p> Selector: Selected assignment: {selectedAssignment_value}</p>
