@@ -3,6 +3,10 @@
   import { cubicIn, cubicOut } from 'svelte/easing';
   //import PointsDisplay from '../components/PointsDisplay.svelte';
   import { userUuid } from "../stores/stores.js";
+  import { authStore } from "../stores/authStore.js";
+  import Login from "./auth/Login.svelte";
+  import Logout from "./auth/Logout.svelte";
+  import Register from "./auth/Register.svelte";
 
 
   let showDropdownMenu = false;
@@ -61,3 +65,10 @@
     </div>
   </div>
 </nav>
+
+{#if !$authStore.isAuthenticated}
+  <Login client:load />
+  <Register client:load />
+{:else}
+  <Logout client:load />
+{/if}
