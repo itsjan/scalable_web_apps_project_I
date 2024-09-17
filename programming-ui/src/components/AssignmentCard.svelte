@@ -1,10 +1,10 @@
 <script>
   export let assignment;
   export let lastOneCompleted;
-  import {selectedAssignment} from "../stores/selectedAssignment.js";
+  import {selectedAssignment} from "../stores/assignments.svelte";
 
   let selectedAssignment_value;
-    
+
     selectedAssignment.subscribe((value) => {
         selectedAssignment_value = value;
     })
@@ -56,4 +56,3 @@
     </div>
   {/if}
 </div>
-

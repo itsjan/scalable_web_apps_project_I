@@ -41,4 +41,6 @@ const useAssignmentsStore = () => {
   };
 };
 
-export { initAssignments, useAssignmentsStore };
+const selectedAssignment = writable(1);
+
+export { initAssignments, selectedAssignment, useAssignmentsStore };

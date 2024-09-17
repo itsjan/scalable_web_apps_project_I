@@ -2,10 +2,10 @@
   import { userUuid } from "../stores/stores.js";
   import { onMount } from "svelte";
   import { basicEditor } from "prism-code-editor/setups";
-  import {selectedAssignment} from "../stores/selectedAssignment.js";
+  import {selectedAssignment} from "../stores/assignments.svelte";
   import "prism-code-editor/prism/languages/markup";
   import "prism-code-editor/prism/languages/python";
-  
+
   let editorElement;
   let editor;
   let assignment_value;

@@ -1,10 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import AssignmentCard from './AssignmentCard.svelte';
-    import {useAssignmentsStore} from "../stores/assignments.svelte";
-    import {selectedAssignment} from "../stores/selectedAssignment.js";
-
-
+    import {useAssignmentsStore, selectedAssignment} from "../stores/assignments.svelte";
 
 
     export let lastOneCompleted;

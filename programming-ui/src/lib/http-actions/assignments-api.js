@@ -1,5 +1,5 @@
 import { userUuid } from "../../stores/stores.js";
-import { selectedAssignment } from "../../stores/selectedAssignment.js";
+import { selectedAssignment } from "../../stores/assignments.svelte";
 
 const getAssignments = async () => {
   console.log("Fetching assignments for user:", userUuid);

@@ -2,8 +2,8 @@
     import { onMount } from 'svelte';
     import { userUuid } from "../stores/stores.js";
     import AssignmentSelector from "./AssignmentSelector.svelte";
-    import {selectedAssignment} from "../stores/selectedAssignment.js";
-    import {initAssignments, useAssignmentsStore} from "../stores/assignments.svelte";
+    //import {selectedAssignment} from "../stores/selectedAssignment.js";
+    import {initAssignments, useAssignmentsStore, selectedAssignment} from "../stores/assignments.svelte";
     import AssignmentCard from './AssignmentCard.svelte';
 
     let selectedAssignment_value;
