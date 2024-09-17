@@ -51,24 +51,23 @@
 
 </script>
 
-<h2>Code Editor</h2>
+
+<div class="card bg-base-100 shadow-xl">
+
+  <div class="card-body">
+
+    <div bind:this={editorElement} class="editor-container mb-4 rounded"></div>
+
+    <div class="card-actions justify-end">
+        <button
+          class="btn btn-primary"
+          on:click={doSimpleGradingDemo}
+        >
+          Do grading demo!
+        </button>
+    </div>
+  </div>
+</div>
+
+
 <button class="btn" on:click={() => console.log(editor.value)}>Log code</button>
-<div bind:this={editorElement} class="editor-container mb-4 rounded shadow"></div>
-
-<button
-  class="btn btn-secondary"
-  on:click={doSimpleGradingDemo}
->
-  Do grading demo!
-</button>
-
-<button class="btn btn-primary">Button</button>
-
-
-<style>
-  .editor-container {
-    height: 10em;
-    overflow: hidden;
-    border: 1px solid #ccc;
-  }
-</style>
