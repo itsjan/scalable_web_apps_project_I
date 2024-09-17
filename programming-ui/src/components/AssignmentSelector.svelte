@@ -20,13 +20,14 @@
 
 </script>
 
-<div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    {#each assignments as assignment}
-      <AssignmentCard
-        {assignment}
-        {lastOneCompleted}
-      />
-    {/each}
-  </div>
-</div>
+
+{#each assignments as assignment}
+    <div class="collapse bg-base-200">
+      <input type="radio" name="my-accordion-1" checked="checked" />
+      <div class="collapse-title text-xl font-medium">{assignment.title}</div>
+      <div class="collapse-content">
+        <p>{assignment.handout}</p>
+
+      </div>
+    </div>
+{/each}
