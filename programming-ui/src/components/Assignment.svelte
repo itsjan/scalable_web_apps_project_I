@@ -22,5 +22,6 @@
 
     console.log("Assignment.svelte script executed");
 </script>
+<p>Use is authenticated: {$authStore.isAuthenticated}</p>
 
 <AssignmentSelector />

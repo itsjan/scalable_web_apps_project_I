@@ -1,7 +1,8 @@
 <script>
     import { onMount } from 'svelte';
     import AssignmentCard from './AssignmentCard.svelte';
-    import { assignmentsStore, selectedAssignment } from "../stores/assignments.svelte.js";
+    import {  selectedAssignment } from "../stores/assignments.svelte.js";
+    import * as assignmentsApi from "../lib/http-actions/assignments-api.js";
     import { authStore } from "../stores/authStore.js";
 
     export let lastOneCompleted;
@@ -12,9 +13,13 @@
     });
 
     let assignments = [];
-    $: assignments = $assignmentsStore;
-</script>
+    onMount(async () => {
+        assignments = (await assignmentsApi.getAssignments()).assignments;
+        console.log('Assignments initialized');
+    });
 
+</script>
+<p>Assignment selector :User is authenticated: {$authStore.isAuthenticated}</p>
 {#if $authStore.isAuthenticated}
     <p>Your assignments:</p>
     {#each assignments as assignment}

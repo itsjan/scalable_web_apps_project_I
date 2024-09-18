@@ -5,7 +5,13 @@
   let password = '';
 
   async function handleSubmit() {
-    await logoutUser();
+    console.log('Logging out user...');
+    try {
+      await logoutUser();
+      console.log('User logged out successfully');
+    } catch (error) {
+      console.error('Error logging out user:', error);
+    }
   }
   </script>
 
