@@ -27,6 +27,7 @@
   </div>
   <div class="flex-none gap-2">
       {#if $authStore.isAuthenticated}
+          <p>Hello, {$authStore.user.user.split('@')[0]}</p>
         <span class="badge">100 points</span>
       {/if}
 
