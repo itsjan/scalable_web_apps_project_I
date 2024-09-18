@@ -1,8 +1,8 @@
-  <script>
+<script>
   import { loginUser } from "../../lib/http-actions/assignments-api.js";
 
-  let email = '';
-  let password = '';
+  let email = "";
+  let password = "";
 
   async function handleSubmit() {
     try {
@@ -12,10 +12,22 @@
       console.error(error);
     }
   }
-  </script>
+</script>
 
+<div class="card bg-base-100">
   <form on:submit|preventDefault={handleSubmit}>
-    <input type="email" bind:value={email} placeholder="Email" required>
-    <input type="password" bind:value={password} placeholder="Password" required>
-    <button type="submit">Login</button>
+    <div class="card-body">
+      <h2 class="card-title">Login</h2>
+      <input type="email" bind:value={email} placeholder="Email" required />
+      <input
+        type="password"
+        bind:value={password}
+        placeholder="Password"
+        required
+      />
+      <div class="card-actions justify-end">
+        <button class="btn btn-primary">Login</button>
+      </div>
+    </div>
   </form>
+</div>
