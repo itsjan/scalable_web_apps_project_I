@@ -19,21 +19,23 @@
     <div class="card-body">
       <h2 class="card-title">Register</h2>
 
-      <input type="email" bind:value={email} placeholder="Email" required />
+      <input class="input input-bordered input-xs w-full max-w-xs" type="email" bind:value={email} placeholder="Email" required />
       <input
         type="password"
+        class="input input-bordered input-xs w-full max-w-xs"
         bind:value={password}
         placeholder="Password"
         required
       />
       <input
         type="password"
+        class="input input-bordered input-xs w-full max-w-xs"
         bind:value={verification}
         placeholder="Verify Password"
         required
       />
       <div class="card-actions justify-end">
-        <button class="btn btn-primary">Register</button>
+        <button class="btn btn-sm btn-secondary">Register</button>
       </div>
 
     </div>

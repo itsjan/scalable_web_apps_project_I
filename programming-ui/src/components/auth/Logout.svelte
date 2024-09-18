@@ -10,5 +10,5 @@
   </script>
 
   <form on:submit|preventDefault={handleSubmit}>
-    <button class="btn" type="submit">Logout</button>
+    <button class="btn btn-sm btn-secondary" type="submit">Logout</button>
   </form>
