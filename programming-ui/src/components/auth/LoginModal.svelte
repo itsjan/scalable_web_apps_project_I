@@ -11,7 +11,7 @@
 </div>
 <div class="chat chat-start">
 <div class="card bg-base-100 w-96 shadow-xl">
-<Login client:load />
+<Login  />
 </div>
 </div>
 <div class="chat chat-end">
@@ -20,6 +20,6 @@
 
 <div class="chat chat-end">
 <div class="card bg-base-100 w-96 shadow-xl">
-<Register client:load />
+<Register  />
 </div>
 </div>
