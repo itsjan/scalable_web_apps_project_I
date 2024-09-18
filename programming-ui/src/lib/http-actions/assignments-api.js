@@ -5,7 +5,7 @@ import { authStore } from "../../stores/authStore.js";
 const getAssignments = async () => {
   console.log("Fetching assignments for user:", userUuid);
   try {
-    const response = await fetch(`/api/assignments/user/${userUuid}`);
+    const response = await fetch(`/api/assignments`);
     // if response is status 401, we need to log the user out
     if (response.status === 401) {
       authStore.logout();

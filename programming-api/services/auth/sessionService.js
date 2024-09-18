@@ -17,9 +17,13 @@ const createSession = async (c, user) => {
   });
 
   const kv = await openKv();
-  await kv.set(["sessions", sessionId], user, {
-    expireIn: WEEK_IN_MILLISECONDS,
-  });
+  await kv.set(
+    ["sessions", sessionId],
+    { user },
+    {
+      expireIn: WEEK_IN_MILLISECONDS,
+    },
+  );
 };
 
 const deleteSession = async (c) => {
@@ -43,18 +47,18 @@ const getUserFromSession = async (c) => {
     return null;
   }
   const kv = await openKv();
-  const user = await kv.get(["sessions", sessionId]);
-  const foundUser = user?.value ?? null;
-  if (!foundUser) {
+  const result = await kv.get(["sessions", sessionId]);
+  const userObject = result?.value ?? null;
+  if (!userObject || !userObject.user) {
     return null;
   }
 
   // Reset the session expiration time
-  await kv.set(["sessions", sessionId], foundUser, {
+  await kv.set(["sessions", sessionId], userObject, {
     expireIn: WEEK_IN_MILLISECONDS,
   });
 
-  return foundUser;
+  return userObject;
 };
 
 export { createSession, deleteSession, getUserFromSession };
