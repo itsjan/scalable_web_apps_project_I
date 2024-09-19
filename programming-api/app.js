@@ -14,7 +14,7 @@ app.use("/api/assignments/*", accessControlMiddleware);
 // Define a custom 404 Not Found handler
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 
-app.get("/api/assignments", assignments.getAssignmentsForUser);
+app.get("/api/assignments", assignments.getAssignments);
 //app.get("/api/assignments/user/:userId/", assignments.getAssignmentsForUser);
 
 app.post("/auth/register", authController.registerUser);

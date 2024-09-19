@@ -10,22 +10,18 @@ const getAssignments = async () => {
     if (response.status === 401) {
       authStore.logout();
     }
-    const data = await response.json();
-    console.log("Received data from API:", data);
+    const assignments = (await response.json()) || [];
+    console.log("Received data from API:", assignments);
 
-    const assignments = data.assignments || [];
-    const lastOneCompleted = data.lastOneCompleted?.[0]?.max_completed ?? 0;
-    const correctSolutions = data.correctSolutions || [];
+    //const assignments = data.assignments || [];
+    //const lastOneCompleted = data.lastOneCompleted?.[0]?.max_completed ?? 0;
+    //const correctSolutions = data.correctSolutions || [];
 
     if (selectedAssignment.value === 0) {
       selectedAssignment.update((n) => 1);
     }
 
-    return {
-      assignments,
-      lastOneCompleted,
-      correctSolutions,
-    };
+    return assignments;
   } catch (error) {
     console.error("Error fetching assignments:", error);
     return { assignments: [], lastOneCompleted: 0, correctSolutions: [] };

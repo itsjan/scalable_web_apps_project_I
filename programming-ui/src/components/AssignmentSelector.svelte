@@ -14,7 +14,7 @@
 
     let assignments = [];
     onMount(async () => {
-        assignments = (await assignmentsApi.getAssignments()).assignments;
+        assignments = (await assignmentsApi.getAssignments());
         console.log('Assignments initialized');
         if (assignments.length > 0 && lastOneCompleted < assignments.length) {
             selectAssignment(assignments[lastOneCompleted]);

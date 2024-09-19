@@ -15,11 +15,11 @@ function createAssignmentsStore() {
       }
       try {
         console.log("Fetching assignments from API...");
-        const fetchedData = await assignmentsApi.getAssignments();
-        console.log("Fetched data:", fetchedData);
-        if (fetchedData && fetchedData.assignments) {
-          console.log(`Fetched ${fetchedData.assignments.length} assignments`);
-          set(fetchedData.assignments);
+        const assignments = await assignmentsApi.getAssignments();
+        console.log("Fetched data:", assignments);
+        if (assignments) {
+          console.log(`Fetched ${assignments.length} assignments`);
+          set(assignments);
           initialized = true;
         } else {
           console.error("Fetched data does not contain assignments");
