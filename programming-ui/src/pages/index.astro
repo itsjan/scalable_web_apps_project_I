@@ -2,9 +2,13 @@
 import Layout from "../layout/Layout.astro";
 import Assignment from "../components/Assignment.svelte";
 import CodeEditor from "../components/CodeEditor.svelte";
+import { userUuid } from "../stores/stores.js";
+import { get } from "svelte/store";
+const currentUserUuid = get(userUuid);
+
+if (currentUserUuid) {
+  return Astro.redirect(`/${currentUserUuid}`);
+}
 ---
 
-<Layout>
-  <Assignment client:only={"svelte"} />
-  <CodeEditor client:only={"svelte"} />
-</Layout>
+<div>Loading...</div>
