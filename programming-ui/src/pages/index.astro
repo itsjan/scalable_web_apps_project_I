@@ -3,11 +3,14 @@ import Layout from "../layout/Layout.astro";
 import Assignment from "../components/Assignment.svelte";
 import CodeEditor from "../components/CodeEditor.svelte";
 import { userUuid } from "../stores/stores.js";
+import { selectedAssignment } from "../stores/assignments.svelte.js";
 import { get } from "svelte/store";
+
 const currentUserUuid = get(userUuid);
+const currentSelectedAssignment = get(selectedAssignment) || 1;
 
 if (currentUserUuid) {
-  return Astro.redirect(`/${currentUserUuid}`);
+  return Astro.redirect(`/${currentUserUuid}/${currentSelectedAssignment}`);
 }
 ---
 

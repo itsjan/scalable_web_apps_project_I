@@ -10,6 +10,7 @@
     import { submissionStore } from "../stores/submissions.store.js";
     import "prism-code-editor/prism/languages/markup";
     import "prism-code-editor/prism/languages/python";
+    import { insertText } from 'prism-code-editor/utils';
 
     let editorElement;
     let editor;
@@ -26,9 +27,12 @@
                 {
                     language: "python",
                     theme: "github-dark",
-                    value: "// code here",
+
                 },
-                () => console.log("ready"),
+                () => {
+                  console.log("editor ready");
+
+                },
             );
         }
     });
@@ -78,15 +82,19 @@
         });
     };
 
-    const updateEditorForDebugging = () => {
-      // this adds a new editor to the page , not what we want
-      // replace this with a function that updates the editor value, text within the editor
-      const newEditor = createEditor("#editor", {
-        language: editor.options.language,
-        value: newContent
-      });
-      // You might need to update any references to the old editor here
-      editor = newEditor;
+    const updateEditorForDebugging = () => {const [start, end] = editor.getSelection();
+      const code = editor.value;
+      console.log("Code:", code);
+      // const { formatted, cursorOffset } = await formatWithCursor(code, {
+      //   cursorOffset: start,
+      //   parser: 'typescript',
+      //   plugins: [pluginTypescript, pluginEstree],
+      // });
+      // const offsetEnd = cursorOffset + end - start;
+
+      //if (formatted != code) {
+        insertText(editor, "new code", 0, code.length)//, cursorOffset, offsetEnd);
+        //}
     };
 </script>
 

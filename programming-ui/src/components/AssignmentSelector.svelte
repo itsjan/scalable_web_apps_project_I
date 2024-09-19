@@ -1,22 +1,22 @@
 <script>
     import { onMount } from "svelte";
+    import { userUuid } from "../stores/stores.js";
     import { selectedAssignment } from "../stores/assignments.svelte.js";
     import * as assignmentsApi from "../lib/http-actions/assignments-api.js";
     import { submissionStore } from "../stores/submissions.store.js";
+    import CodeEditor from "../components/CodeEditor.svelte";
 
     export let lastOneCompleted = 1;
     let selectedAssignment_value;
     let submissions = [];
     let localSubmissions = []; // Store for local submission data
 
-    selectedAssignment.subscribe((value) => {
-        selectedAssignment_value = value;
-        if (value) {
-            submissions = $submissionStore.filter(
-                (sub) => sub.programming_assignment_id === value.id,
-            );
-        }
-    });
+    function changeUrl(pageNumber) {
+      let newUrl = `/${$userUuid}/${pageNumber}`;
+      // Change the URL without reloading the page
+      window.history.pushState({}, '', newUrl);
+    }
+
 
     // Subscribe to submissionStore
     $: {
@@ -29,13 +29,16 @@
         assignments = await assignmentsApi.getAssignments();
         console.log("Assignments initialized");
         if (assignments.length > 0 && lastOneCompleted < assignments.length) {
-            selectAssignment(assignments[lastOneCompleted]);
+            selectAssignment(assignments[lastOneCompleted], lastOneCompleted + 1);
         }
         await fetchSubmissions();
     });
 
-    function selectAssignment(assignment) {
+    function selectAssignment(assignment, pageNumber) {
         selectedAssignment.set(assignment);
+        changeUrl(pageNumber);
+
+
     }
 
     async function fetchSubmissions() {
@@ -55,7 +58,7 @@
 <button on:click={fetchSubmissions}>Fetch Submissions</button>
 <ul class="timeline">
     {#each assignments as assignment, index}
-        <li on:click={() => selectAssignment(assignment)}>
+        <li>
             <hr class:bg-primary={index < lastOneCompleted} />
             <div class="timeline-start">Assignment {index + 1}</div>
             <div class="timeline-middle">
@@ -105,8 +108,9 @@
                 {/if}
             </div>
             <div
-                class="timeline-end timeline-box"
-                class:selected={selectedAssignment_value === assignment}
+                on:click={() => selectAssignment(assignment, index + 1)}
+                class="timeline-end timeline-box cursor-pointer"
+                class:selected={$selectedAssignment === assignment}
             >
                 {assignment.title}
             </div>
@@ -130,6 +134,10 @@
         <p>No submissions for this assignment yet.</p>
     {/if}
 {/if}
+
+
+
+
 
 <style>
     .selected {

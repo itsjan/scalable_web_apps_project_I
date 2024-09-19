@@ -1,0 +1,20 @@
+---
+import Layout from "../../../layout/Layout.astro";
+import AssignmentSelector from "../../../components/AssignmentSelector.svelte";
+import CodeEditor from "../../../components/CodeEditor.svelte";
+import { selectedAssignment } from "../../../stores/assignments.svelte.js";
+
+import { get } from "svelte/store";
+const { userUuid, assignment } = Astro.params;
+
+// Update the selectedAssignment value based on the URL parameter
+selectedAssignment.set(Number(assignment));
+---
+
+<Layout userUuid={userUuid}>
+  <h1>Hello, {userUuid}!</h1>
+  <p>selectedAssignment: {get(selectedAssignment)}</p>
+  <AssignmentSelector client:only={"svelte"} />
+  <p>code editor</p>
+  <CodeEditor code={"# Hello, world!"} client:only={"svelte"} />
+</Layout>
