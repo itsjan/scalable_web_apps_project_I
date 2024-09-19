@@ -3,7 +3,7 @@
     import { userUuid } from "../stores/stores.js";
     import AssignmentSelector from "./AssignmentSelector.svelte";
     import { assignmentsStore, selectedAssignment } from "../stores/assignments.svelte.js";
-    import AssignmentCard from './AssignmentCard.svelte';
+    //import AssignmentCard from './AssignmentCard.svelte';
     import { authStore } from "../stores/authStore.js";
 
     let selectedAssignment_value;
@@ -20,7 +20,7 @@
 
     let lastOneCompleted = -1;
 
-    console.log("Assignment.svelte script executed");
+
 </script>
 <p>Use is authenticated: {$authStore.isAuthenticated}</p>
 

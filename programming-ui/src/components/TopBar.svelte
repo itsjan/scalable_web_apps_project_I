@@ -32,14 +32,14 @@
       {/if}
 
       {#if $authStore.isAuthenticated}
-        <Logout client:load />
+        <Logout />
         {:else}
         <!-- Open the modal using ID.showModal() method -->
         <button class="btn btn-sm btn-secondary" onclick="my_modal_1.showModal()">Login</button>
         <dialog id="my_modal_1" class="modal">
-          <div class="modal-box">
+          <div class="modal-box min-h-96 max-w-96">
               <form method="dialog">
-                <button class="btn btn-sm btn-outline btn-ghost absolute right-2 top-2">✕</button>
+                <button class="btn btn-sm  btn-ghost absolute right-2 top-2">✕</button>
               </form>
             <!-- LOGIN MODAL CONTENT -->
             <LoginModal />

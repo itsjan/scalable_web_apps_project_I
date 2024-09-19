@@ -3,34 +3,113 @@
 
   let email = "";
   let password = "";
+  let loginFailed = false;
+  let isLoading = false;
 
   async function handleSubmit() {
+    isLoading = true;
     try {
       await loginUser(email, password);
       console.log("LOGIN SUCCESS");
+      loginFailed = false;
     } catch (error) {
       console.error(error);
+      loginFailed = true;
+    } finally {
+      isLoading = false;
     }
   }
+
+  $: console.log("loginFailed:", loginFailed);
+
+  $: isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  $: emailInputted = email.length > 0;
+  $: isLoginEnabled = isValidEmail && password.trim() !== "";
 </script>
 
 <div class="card bg-base-100">
+  {#if loginFailed}
+    <div role="alert" class="alert alert-error">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>Login details are incorrect!.</span>
+    </div>
+  {/if}
   <form on:submit|preventDefault={handleSubmit}>
     <div class="card-body">
       <h2 class="card-title">Login</h2>
-      <input
-          class="input input-bordered input-xs w-full max-w-xs"
-          type="email" bind:value={email} placeholder="Email" required />
-      <input
-          class="input input-bordered input-xs w-full max-w-xs"
-        type="password"
-        bind:value={password}
-        placeholder="Password"
-        required
-      />
+      <label
+        class="input input-bordered input-xs w-full max-w-xs flex items-center gap-2 {emailInputted
+          ? isValidEmail
+            ? 'input-success'
+            : 'input-error'
+          : ''}"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="h-4 w-4 opacity-70"
+        >
+          <path
+            d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z"
+          />
+          <path
+            d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z"
+          />
+        </svg>
+        <input
+          type="email"
+          class="grow"
+          bind:value={email}
+          placeholder="Email"
+          required
+          disabled={isLoading}
+        />
+      </label>
+      <label
+        class="input input-bordered input-xs w-full max-w-xs flex items-center gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="h-4 w-4 opacity-70"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <input
+          type="password"
+          class="grow"
+          bind:value={password}
+          placeholder="Password"
+          required
+          disabled={isLoading}
+        />
+      </label>
       <div class="card-actions justify-end">
-        <button class="btn btn-sm btn-secondary">Login</button>
+        <button class="btn btn-sm btn-secondary" disabled={!isLoginEnabled || isLoading}
+          >Login</button
+        >
       </div>
+      {#if isLoading}
+        <progress class="progress w-full"></progress>
+      {/if}
     </div>
   </form>
 </div>

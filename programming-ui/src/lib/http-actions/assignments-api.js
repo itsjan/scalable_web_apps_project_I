@@ -46,9 +46,8 @@ async function loginUser(email, password) {
     } else {
       throw new Error("Login failed");
     }
-  } catch (error) {
-    console.error("Login error:", error);
-    // Handle error (e.g., show message to user)
+  } finally {
+    // Handle success or failure
   }
 }
 

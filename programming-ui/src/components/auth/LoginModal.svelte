@@ -1,25 +1,28 @@
 <script>
- import Login from "./Login.svelte";
- import Register from "./Register.svelte";
+  import Login from "./Login.svelte";
+  import Register from "./Register.svelte";
+  let activeComponent = "login";
 </script>
 
-
-<div class="chat chat-start">
-  <div class="chat-bubble">
-    Please login with your details
+<div min-h-full>
+  <div class="join grid grid-cols-2">
+    <button
+      class="join-item btn btn-sm"
+      class:btn-active={activeComponent === "login"}
+      on:click={() => (activeComponent = "login")}>Login</button
+    >
+    <button
+      class="join-item btn btn-sm"
+      class:btn-active={activeComponent === "register"}
+      on:click={() => (activeComponent = "register")}>Register</button
+    >
   </div>
-</div>
-<div class="chat chat-start">
-<div class="card bg-base-100 w-96 shadow-xl">
-<Login  />
-</div>
-</div>
-<div class="chat chat-end">
-  <div class="chat-bubble">Or register a new account</div>
-</div>
 
-<div class="chat chat-end">
-<div class="card bg-base-100 w-96 shadow-xl">
-<Register  />
-</div>
+  <div>
+    {#if activeComponent === "login"}
+      <Login />
+    {:else}
+      <Register />
+    {/if}
+  </div>
 </div>
