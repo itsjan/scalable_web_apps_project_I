@@ -83,7 +83,7 @@ async function logoutUser() {
   }
 }
 
-/* Submimssions */
+/* Submissions */
 const submitSolutionForGrading = async (assignmentId, code) => {
   try {
     const response = await fetch(
@@ -96,16 +96,30 @@ const submitSolutionForGrading = async (assignmentId, code) => {
     );
     console.log(response);
 
+    const result = await response.json();
+
     if (response.ok) {
-      const submissionId = await response.json();
-      console.log("Submission ID:", submissionId);
-      return submissionId;
+      console.log("Submission ID:", result.data[0].id);
+      return {
+        status: "ok",
+        code: result.code || "SUCCESS",
+        message: "Solution submitted successfully",
+        data: result.data,
+      };
     } else {
-      throw new Error("Submission failed", response);
+      return {
+        status: "error",
+        code: result.code || "UNKNOWN_ERROR",
+        message: result.message || "Failed to submit solution for grading",
+      };
     }
   } catch (error) {
     console.error("Submission error:", error);
-    // Handle error (e.g., show message to user)
+    return {
+      status: "error",
+      code: "FETCH_ERROR",
+      message: "Failed to submit solution for grading",
+    };
   }
 };
 

@@ -34,8 +34,8 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
     }
 
     const result = await sql`
-      INSERT INTO programming_assignment_submissions (programming_assignment_id, code, user_uuid)
-      VALUES (${assignmentId}, ${code}, ${userUuid})
+      INSERT INTO programming_assignment_submissions (programming_assignment_id, code, user_uuid, status)
+      VALUES (${assignmentId}, ${code}, ${userUuid}, 'pending')
       RETURNING id;
     `;
     console.log("Solution submitted successfully:", result);
@@ -48,8 +48,19 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
       stack: error.stack,
       code: error.code,
     });
+    if (error.code === "23505") {
+      // Unique constraint violation
+      return {
+        status: "error",
+        code: "SUB-1",
+        sqlCode: error.code,
+        message:
+          "You already have a pending submission. Please wait for it to be graded before submitting another.",
+      };
+    }
     return {
       status: "error",
+      sqlCode: error.code,
       message: "Failed to submit solution for grading",
       error: error.message,
     };
