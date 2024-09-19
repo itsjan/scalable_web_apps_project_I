@@ -1,15 +1,28 @@
 <script>
     import { onMount } from "svelte";
-    //import AssignmentCard from './AssignmentCard.svelte';
     import { selectedAssignment } from "../stores/assignments.svelte.js";
     import * as assignmentsApi from "../lib/http-actions/assignments-api.js";
+    import { submissionStore } from "../stores/submissions.store.js";
 
     export let lastOneCompleted = 1;
     let selectedAssignment_value;
+    let submissions = [];
+    let localSubmissions = []; // Store for local submission data
 
     selectedAssignment.subscribe((value) => {
         selectedAssignment_value = value;
+        if (value) {
+            submissions = $submissionStore.filter(
+                (sub) => sub.programming_assignment_id === value.id,
+            );
+        }
     });
+
+    // Subscribe to submissionStore
+    $: {
+        localSubmissions = $submissionStore;
+        console.log("Submission store updated:", localSubmissions);
+    }
 
     let assignments = [];
     onMount(async () => {
@@ -18,14 +31,28 @@
         if (assignments.length > 0 && lastOneCompleted < assignments.length) {
             selectAssignment(assignments[lastOneCompleted]);
         }
+        await fetchSubmissions();
     });
 
     function selectAssignment(assignment) {
         selectedAssignment.set(assignment);
     }
+
+    async function fetchSubmissions() {
+        try {
+            await submissionStore.initSubmissions();
+            console.log("Submissions fetched and store updated");
+        } catch (error) {
+            console.error("Error fetching submissions:", error);
+        }
+    }
+
+    // Console log for debugging
+    $: console.log("Current submission store value:", $submissionStore);
 </script>
 
 <p>last one completed: {lastOneCompleted}</p>
+<button on:click={fetchSubmissions}>Fetch Submissions</button>
 <ul class="timeline">
     {#each assignments as assignment, index}
         <li on:click={() => selectAssignment(assignment)}>
@@ -44,6 +71,27 @@
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
                             clip-rule="evenodd"
                         />
+                    </svg>
+                {:else if submissionStore.hasPendingSolution(assignment.id)}
+                    <span class="loading loading-ball loading-lg text-accent"
+                    ></span>
+                {:else if submissionStore.hasCorrectSolution(assignment.id)}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        class="text-green-500 h-5 w-5"
+                    >
+                        <circle cx="10" cy="10" r="8" />
+                    </svg>
+                {:else if submissionStore.hasIncorrectSolution(assignment.id)}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        class="text-red-500 h-5 w-5"
+                    >
+                        <circle cx="10" cy="10" r="8" />
                     </svg>
                 {:else}
                     <svg
@@ -66,6 +114,22 @@
         </li>
     {/each}
 </ul>
+
+<!--  list of submissions for the selected assignment -->
+{#if selectedAssignment_value}
+    <h2>Submissions for {selectedAssignment_value.title}</h2>
+    {#if submissions.length > 0}
+        <ul>
+            {#each submissions as submission}
+                <li>
+                    {submission.code ? "Code submission" : "No code"} - {submission.status}
+                </li>
+            {/each}
+        </ul>
+    {:else}
+        <p>No submissions for this assignment yet.</p>
+    {/if}
+{/if}
 
 <style>
     .selected {

@@ -17,7 +17,6 @@ const findAllForUser = async (userUuid) => {
 };
 
 const lastAssignmentCompletedByUser = async (userUuid) => {
-  
   // the max of completed assignments based on the assignment_order,
   // or 1 if no completed assignments
   return await sql`
@@ -31,14 +30,4 @@ const lastAssignmentCompletedByUser = async (userUuid) => {
   `;
 };
 
-  const correctSubmissionsByUser = async (userUuid) => {
-    return await sql`
-      SELECT id
-      FROM programming_assignment_submissions
-      WHERE user_uuid = ${userUuid} AND correct = true
-      ORDER BY programming_assignment_id
-    `;
-  };
-
-
-export { findAll, findAllForUser, correctSubmissionsByUser, lastAssignmentCompletedByUser };
+export { findAll, lastAssignmentCompletedByUser };

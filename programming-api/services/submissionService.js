@@ -86,8 +86,39 @@ const correctSubmissionsByUser = async (userUuid) => {
   `;
 };
 
+const submissionsByUser = async (assignmentId, userUuid) => {
+  return await sql`
+      SELECT id, code, status, grader_feedback, correct
+      FROM programming_assignment_submissions
+      WHERE programming_assignment_id = ${assignmentId}
+      AND user_uuid = ${userUuid}
+      ORDER BY programming_assignment_id
+    `;
+};
+
+const getAllSubmissionsByUser = async (userUuid) => {
+  console.log("Starting getAllSubmissionsByUser function");
+  console.log("User UUID:", userUuid);
+
+  try {
+    const allSubmissions = await sql`
+      SELECT id, programming_assignment_id, code, status, grader_feedback, correct
+      FROM programming_assignment_submissions
+      WHERE user_uuid = ${userUuid}
+      ORDER BY programming_assignment_id
+    `;
+    console.log("All submissions retrieved:", allSubmissions);
+    return allSubmissions;
+  } catch (error) {
+    console.error("Error in getAllSubmissionsByUser:", error);
+    throw error;
+  }
+};
+
 export {
+  submissionsByUser,
   submitSolutionForGrading,
   correctSubmission,
   correctSubmissionsByUser,
+  getAllSubmissionsByUser,
 };
