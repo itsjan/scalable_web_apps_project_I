@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { basicEditor } from "prism-code-editor/setups";
   import {selectedAssignment} from "../stores/assignments.svelte";
+  import { submitSolutionForGrading } from "../lib/http-actions/assignments-api.js";
   import "prism-code-editor/prism/languages/markup";
   import "prism-code-editor/prism/languages/python";
 
@@ -48,15 +49,20 @@
 
   };
 
+  const submitSolution = async () => {
+    const result = await submitSolutionForGrading(assignment_value.id, editor.value);
+    console.log(result);
+
+  }
 
 </script>
 
-
+<p>selected assignment: {$selectedAssignment.handout}</p>
 <div class="card bg-base-100 shadow-xl ">
 
   <div class="card-body">
 
-    <div bind:this={editorElement} class="editor-container mb-4 rounded"></div>
+    <div bind:this={editorElement} class="textarea textarea-bordered editor-container mb-4 rounded"></div>
 
     <div class="card-actions justify-end">
         <button
@@ -64,6 +70,13 @@
           on:click={doSimpleGradingDemo}
         >
           Do grading demo!
+        </button>
+
+        <button
+          class="btn btn-primary"
+          on:click={submitSolution}
+        >
+          Submit solution
         </button>
     </div>
   </div>

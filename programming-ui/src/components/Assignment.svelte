@@ -22,6 +22,6 @@
 
 
 </script>
-<p>Use is authenticated: {$authStore.isAuthenticated}</p>
+<p>User is authenticated: {$authStore.isAuthenticated}</p>
 
 <AssignmentSelector />
