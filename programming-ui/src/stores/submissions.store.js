@@ -1,9 +1,9 @@
 // submission-store.js
 import { writable } from "svelte/store";
 import {
-  submitSolutionForGrading,
   correctSubmissionsByUser,
   getAllSubmissionsByUser,
+  submitSolutionForGrading,
 } from "../lib/http-actions/submissions-api.js";
 import { userUuid } from "../stores/stores.js";
 import { get } from "svelte/store";
@@ -11,7 +11,7 @@ import { get } from "svelte/store";
 function createSubmissionStore() {
   let storedSubmissions = localStorage.getItem("submissions");
   const { subscribe, set, update } = writable(
-    storedSubmissions ? JSON.parse(storedSubmissions) : [],
+    storedSubmissions ? JSON.parse(storedSubmissions) : []
   );
   let initialized = false;
 
@@ -36,12 +36,12 @@ function createSubmissionStore() {
           set(response.submissions);
           localStorage.setItem(
             "submissions",
-            JSON.stringify(response.submissions),
+            JSON.stringify(response.submissions)
           );
           initialized = true;
         } else {
           console.error(
-            "Fetched data does not contain submissions or submissions is not an array",
+            "Fetched data does not contain submissions or submissions is not an array"
           );
         }
       } catch (error) {
@@ -58,7 +58,7 @@ function createSubmissionStore() {
     updateSubmission: (id, updates) => {
       update((s) => {
         const newState = s.map((item) =>
-          item.id === id ? { ...item, ...updates } : item,
+          item.id === id ? { ...item, ...updates } : item
         );
         localStorage.setItem("submissions", JSON.stringify(newState));
         return newState;
@@ -99,14 +99,14 @@ function createSubmissionStore() {
         (submission) =>
           submission.programming_assignment_id === assignment_id &&
           submission.correct === true &&
-          submission.status === "processed",
+          submission.status === "processed"
       );
     },
     hasPendingSolution: (assignment_id) => {
       return get(submissionStore).some(
         (submission) =>
           submission.programming_assignment_id === assignment_id &&
-          submission.status === "pending",
+          submission.status === "pending"
       );
     },
     hasIncorrectSolution: (assignment_id) => {
@@ -114,8 +114,18 @@ function createSubmissionStore() {
         (submission) =>
           submission.programming_assignment_id === assignment_id &&
           submission.correct === false &&
-          submission.status === "processed",
+          submission.status === "processed"
       );
+    },
+    hasSubmissions: (assignment_id) => {
+      return get(submissionStore).some(
+        (submission) => submission.programming_assignment_id === assignment_id
+      );
+    },
+    lastSubmission: (assignment_id) => {
+      return get(submissionStore).filter(
+        (submission) => submission.programming_assignment_id === assignment_id
+      )[0];
     },
   };
 }

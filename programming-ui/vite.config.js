@@ -1,5 +1,4 @@
 // vite.config.js
-const config = {
-};
+const config = {};
 
 export default config;

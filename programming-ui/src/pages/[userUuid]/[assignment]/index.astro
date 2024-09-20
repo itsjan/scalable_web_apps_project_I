@@ -12,9 +12,6 @@ selectedAssignment.set(Number(assignment));
 ---
 
 <Layout userUuid={userUuid}>
-  <h1>Hello, {userUuid}!</h1>
-  <p>selectedAssignment: {get(selectedAssignment)}</p>
   <AssignmentSelector client:only={"svelte"} />
-  <p>code editor</p>
   <CodeEditor code={"# Hello, world!"} client:only={"svelte"} />
 </Layout>

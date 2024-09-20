@@ -54,13 +54,11 @@
     $: console.log("Current submission store value:", $submissionStore);
 </script>
 
-<p>last one completed: {lastOneCompleted}</p>
-<button on:click={fetchSubmissions}>Fetch Submissions</button>
 <ul class="timeline">
     {#each assignments as assignment, index}
         <li>
             <hr class:bg-primary={index < lastOneCompleted} />
-            <div class="timeline-start">Assignment {index + 1}</div>
+            <div class="timeline-start">{index + 1}</div>
             <div class="timeline-middle">
                 {#if index < lastOneCompleted}
                     <svg
