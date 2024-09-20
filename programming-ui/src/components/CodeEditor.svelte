@@ -16,6 +16,13 @@
   let editor;
   let assignment_value;
 
+  const loadSubmission = (submission) => {
+    if (editor && submission.code) {
+      insertText(editor, submission.code, 0, editor.value.length, 0, 0);
+    }
+  };
+
+
   selectedAssignment.subscribe((value) => {
     assignment_value = value;
     if (submissionStore.hasSubmissions(assignment_value.id)) {
@@ -30,18 +37,21 @@
 
   });
 
-  let submissions = [];
-  submissionStore.subscribe((value) => {
-    submissions = value;
-  });
 
-  const loadSubmission = (submission) => {
-    if (editor && submission.code) {
-      insertText(editor, submission.code, 0, editor.value.length, 0, 0);
-    }
-  };
+
+
+
+  let submissions
+
 
   onMount(() => {
+
+    submissions = [];
+    submissionStore.subscribe((value) => {
+      submissions = value;
+    });
+
+
     if (editorElement) {
       editor = basicEditor(
         editorElement,
@@ -119,29 +129,25 @@
     <h2 class="card-title">{$selectedAssignment.title}</h2>
     <p>{$selectedAssignment.handout}</p>
 
-    <!-- Start of submission dropdown -->
-    <div class="dropdown dropdown-hover flex-1">
-      <div tabindex="0" role="button" class="btn btn-accent btn-xs m-1">
-        {#if submissionStore.hasSubmissions(assignment_value.id)}
-          Choose a submission
-        {:else}
-          No submissions for this assignment yet.
-        {/if}
-      </div>
-      <ul
-        tabindex="0"
-        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-      >
-        {#each submissions.filter((submission) => submission.programming_assignment_id === assignment_value.id) as submission}
-          <li>
-            <a on:click={() => loadSubmission(submission)}>
-              Submission {submission.id} - {submission.status}
-            </a>
-          </li>
-        {/each}
-      </ul>
+    <!-- Start of submission timeline -->
+    <div class="overflow-x-auto">
+      {#if submissionStore.hasSubmissions(assignment_value.id)}
+        <ul class="steps">
+          {#each submissions.filter((submission) => submission.programming_assignment_id === assignment_value.id) as submission}
+            <li
+              data-content={submission.status === 'pending' ? '?' : submission.correct ? '✓' : '✕'}
+              class={`step ${submission.correct ? 'step-accent' : submission.status === 'pending' ? '' : 'step-error'}`}
+              on:click={() => loadSubmission(submission)}
+              style="cursor: pointer; transition: background-color 0.3s;"
+
+            ></li>
+          {/each}
+        </ul>
+      {:else}
+        <p>No submissions for this assignment yet.</p>
+      {/if}
     </div>
-    <!-- End of submission dropdown -->
+    <!-- End of submission timeline -->
     <div
       bind:this={editorElement}
       class="textarea textarea-bordered editor-container mb-4 rounded"
