@@ -36,10 +36,10 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
     const result = await sql`
       INSERT INTO programming_assignment_submissions (programming_assignment_id, code, user_uuid, status)
       VALUES (${assignmentId}, ${code}, ${userUuid}, 'pending')
-      RETURNING id;
+      RETURNING *
     `;
     console.log("Solution submitted successfully:", result);
-    return { status: "ok", data: result };
+    return { status: "ok", ...result[0] };
   } catch (error) {
     console.error("Error submitting solution for grading:", error);
     console.error("Error details:", {

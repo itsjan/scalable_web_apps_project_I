@@ -12,16 +12,18 @@ const submitSolutionForGrading = async (assignmentId, code) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
-      },
+      }
     );
-    console.log(response);
+    console.log("Submission response:", response);
 
     const result = await response.json();
+    console.log("Submission result:", result);
 
     if (response.ok) {
-      console.log("Submission ID:", result.data[0].id);
+      //console.log("Submission ID:", result.data.id);
       return {
         status: "ok",
+        submission_id: result.id || "?",
         code: result.code || "SUCCESS",
         message: "Solution submitted successfully",
         data: result.data,
@@ -58,7 +60,7 @@ const getAllSubmissionsByUser = async (userUuid) => {
 const getSubmissionsByUser = async (userUuid, assignmentId) => {
   try {
     const response = await fetch(
-      `/api/user/${userUuid}/submissions/${assignmentId}`,
+      `/api/user/${userUuid}/submissions/${assignmentId}`
     );
     const submissions = await response.json();
     console.log("Received submissions:", submissions);

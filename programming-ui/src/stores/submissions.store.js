@@ -7,6 +7,57 @@ import {
 } from "../lib/http-actions/submissions-api.js";
 import { userUuid } from "../stores/stores.js";
 import { get } from "svelte/store";
+let webSocket; // updates to submissions
+
+function createWebSocketConnection() {
+  const wsUrl = `ws://${window.location.host}/ws/user/${get(userUuid)}`;
+  webSocket = new WebSocket(wsUrl);
+
+  webSocket.onopen = () => {
+    console.log("WebSocket connection established for user:", get(userUuid));
+  };
+
+  webSocket.onmessage = (event) => {
+    //console.log(event);
+    const data = JSON.parse(event.data);
+    console.log(data);
+    handleWebSocketMessage(data);
+  };
+
+  webSocket.onclose = () => {
+    console.log("WebSocket connection closed");
+    // Attempt to reconnect after a delay
+    setTimeout(createWebSocketConnection, 5000);
+  };
+
+  webSocket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+  };
+}
+
+function handleWebSocketMessage(data) {
+  switch (data.type) {
+    case "submission_update":
+      updateSubmission(data.submission);
+      break;
+
+    default:
+      console.log("Unknown message type:", data.type);
+  }
+}
+
+function updateSubmission(submission) {
+  submissionStore.update((store) => {
+    const index = store.findIndex((sub) => sub.id === submission.id);
+    if (index !== -1) {
+      store[index] = { ...store[index], ...submission };
+    } else {
+      store.push(submission);
+    }
+    localStorage.setItem("submissions", JSON.stringify(store));
+    return store;
+  });
+}
 
 function createSubmissionStore() {
   let storedSubmissions = localStorage.getItem("submissions");
@@ -39,6 +90,9 @@ function createSubmissionStore() {
             JSON.stringify(response.submissions)
           );
           initialized = true;
+
+          // setup websocket connection to the server
+          createWebSocketConnection();
         } else {
           console.error(
             "Fetched data does not contain submissions or submissions is not an array"
@@ -69,6 +123,9 @@ function createSubmissionStore() {
       set([]);
       localStorage.removeItem("submissions");
       initialized = false;
+      if (webSocket) {
+        webSocket.close();
+      }
     },
     update: (updater) => {
       update((s) => {
@@ -86,6 +143,11 @@ function createSubmissionStore() {
           return newState;
         });
       }
+
+      //   try {
+      //    const responseToSubmissionFromServer =
+      //  }
+
       return result;
     },
     getCorrectSubmissions: async () => {

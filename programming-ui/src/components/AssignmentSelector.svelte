@@ -11,6 +11,7 @@
     let submissions = [];
     let localSubmissions = []; // Store for local submission data
 
+
     function changeUrl(pageNumber) {
       let newUrl = `/${$userUuid}/${pageNumber}`;
       // Change the URL without reloading the page

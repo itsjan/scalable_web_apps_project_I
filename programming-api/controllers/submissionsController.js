@@ -2,7 +2,7 @@
 
 import * as submissionService from "../services/submissionService.js";
 
-const submitSolutionForGrading = async (c, matchresult) => {
+const submitSolutionForGrading = async (c, ws) => {
   console.log("Starting submitSolutionForGrading function");
   console.log("c ........:", { ...c });
   const assignmentId = c.req.param("assignmentId");
@@ -22,11 +22,9 @@ const submitSolutionForGrading = async (c, matchresult) => {
     );
     console.log("Submission result:", result);
 
-    if (result.status === "ok") {
-      return c.json({ submissionId: result.data[0].id });
-    } else {
-      return c.json({ message: result.message, ok: false }, 500);
-    }
+    ws.send(JSON.stringify({ type: "submission_update", submission: result }));
+
+    return c.json({ ...result, ok: true }, 200);
   } catch (error) {
     console.log("Error in submitSolutionForGrading:", error);
     return c.json({ message: "Internal Server Error", ok: false }, 500);

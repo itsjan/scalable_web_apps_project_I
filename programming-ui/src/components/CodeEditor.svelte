@@ -91,12 +91,12 @@
       editor.value
     );
     console.log(result);
-    // Add submitted solution to the store
-    submissionStore.addSubmission({
-      assignmentId: assignment_value.id,
-      code: editor.value,
-      result: result,
-    });
+    // UPDATED FROM THE SERVER WS Add submitted solution to the store
+    // submissionStore.addSubmission({
+    //   assignmentId: assignment_value.id,
+    //   code: editor.value,
+    //   result: result,
+    // });
   };
 
   const fetchUserSubmissions = async () => {
