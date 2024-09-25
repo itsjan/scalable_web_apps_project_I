@@ -20,7 +20,6 @@ const submitSolutionForGrading = async (c, ws) => {
 
     return c.json({ ...result, ok: true }, 200);
   } catch (error) {
-    console.log("Error in submitSolutionForGrading:", error);
     return c.json({ message: "Internal Server Error", ok: false }, 500);
   }
 };

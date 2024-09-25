@@ -37,10 +37,6 @@
 
   });
 
-
-
-
-
   let submissions
 
 
@@ -48,6 +44,7 @@
 
     submissions = [];
     submissionStore.subscribe((value) => {
+      console.log("SUBMISSIONS STORE UPDATED", value);
       submissions = value;
     });
 
@@ -86,42 +83,21 @@
   };
 
   const submitSolution = async () => {
-    const result = await submitSolutionForGrading(
-      assignment_value.id,
-      editor.value
-    );
-    console.log(result);
-    // UPDATED FROM THE SERVER WS Add submitted solution to the store
-    // submissionStore.addSubmission({
-    //   assignmentId: assignment_value.id,
-    //   code: editor.value,
-    //   result: result,
-    // });
+    if ( assignment_value ) {
+      const result = await submitSolutionForGrading(
+        assignment_value.id,
+        editor.value
+      );
+      console.log(result);
+    } else {
+      alert("Please select an assignment first");
+    }
+
   };
 
-  const fetchUserSubmissions = async () => {
-    const submissions = await getSubmissionsByUser(
-      $userUuid,
-      assignment_value.id
-    );
-    console.log("User submissions:", submissions);
-    // Update the submission store with fetched submissions
-    submissionStore.set(submissions);
-  };
 
-  const updateEditorForDebugging = () => {
-    const code = editor.value;
-    console.log("Original Code:", code);
 
-    // New code to insert
-    const newCode =
-      "# New code\ndef example():\n    print('Hello, World!')\n\nexample()";
 
-    // Replace the entire content and set cursor to the start
-    insertText(editor, newCode, 0, code.length, 0, 0);
-
-    console.log("Updated Code:", editor.value);
-  };
 </script>
 
 <div class="card bg-base-100 shadow-xl">
@@ -129,22 +105,46 @@
     <h2 class="card-title">{$selectedAssignment.title}</h2>
     <p>{$selectedAssignment.handout}</p>
 
+
+    <div class="mb-4">
+      <h3 class="text-lg font-semibold mb-2">Submissions:</h3>
+      {#if submissions && submissions.length > 0}
+        <ul class="list-disc pl-5">
+          {#each submissions as submission}
+            <li>
+              Status: {submission.status},
+              ID: {submission.id},
+              Assignment ID: {submission.programming_assignment_id},
+              Code: {submission.code.substring(0, 20)}...
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p>No submissions available.</p>
+      {/if}
+    </div>
+    <div class="mb-4">
+      <h3 class="text-lg font-semibold mb-2">Selected Assignment:</h3>
+      <p>ID: {$selectedAssignment.id}</p>
+
+    </div>
+
+
     <!-- Start of submission timeline -->
     <div class="overflow-x-auto">
-      {#if submissionStore.hasSubmissions(assignment_value.id)}
+      {#if assignment_value && assignment_value.id}
         <ul class="steps">
-          {#each submissions.filter((submission) => submission.programming_assignment_id === assignment_value.id) as submission}
+          {#each $submissionStore.filter(sub => sub.programming_assignment_id === assignment_value.id) as submission (submission.id)}
             <li
               data-content={submission.status === 'pending' ? '?' : submission.correct ? '✓' : '✕'}
               class={`step ${submission.correct ? 'step-accent' : submission.status === 'pending' ? '' : 'step-error'}`}
               on:click={() => loadSubmission(submission)}
               style="cursor: pointer; transition: background-color 0.3s;"
-
             ></li>
           {/each}
         </ul>
       {:else}
-        <p>No submissions for this assignment yet.</p>
+        <p>No assignment selected</p>
       {/if}
     </div>
     <!-- End of submission timeline -->
@@ -154,20 +154,12 @@
     ></div>
 
     <div class="card-actions justify-end">
-      <button class="btn btn-primary" on:click={doSimpleGradingDemo}>
+      <button class="btn btn-outline" on:click={doSimpleGradingDemo}>
         Do grading demo!
       </button>
 
       <button class="btn btn-primary" on:click={submitSolution}>
         Submit solution
-      </button>
-
-      <button class="btn btn-secondary" on:click={fetchUserSubmissions}>
-        Fetch Submissions
-      </button>
-
-      <button class="btn btn-warning" on:click={updateEditorForDebugging}>
-        Debug Update
       </button>
     </div>
   </div>

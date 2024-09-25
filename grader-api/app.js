@@ -44,6 +44,7 @@ const post_ping = (req, mappingResult) => {
 };
 
 const post_for_grading = async (req, mappingResult) => {
+  let result;
 
   try {
     const result = codeSubmissionValidator.safeParse(await req.json());
@@ -52,15 +53,20 @@ const post_for_grading = async (req, mappingResult) => {
     }
 
     const { assignment, user, code, testCode } = result.data;
-    console.log(`%c assignment: ${assignment}\nUSER:\n ${user}\n code: \n${code}\n test code:\n ${testCode}\n`, "color: green");
 
+    result = await grade(code, testCode);
+
+    console.log(
+      `%c assignment: ${assignment}\nUSER:\n ${user}\n code: \n${code}\n test code:\n ${testCode}\n`,
+      "color: green",
+    );
   } catch (error) {
     console.log("Error parsing JSON", error);
   }
   // const code = requestData.code || getCode();
   // const testCode = requestData.testCode || "";
-  
-  return new Response("POST FOR GRADING", { status: 200 });
+
+  return new Response(JSON.stringify({ result: result }));
 };
 
 const urlMap = [
@@ -131,8 +137,8 @@ const handleRequest = async (request) => {
   const mapping = urlMap.find(
     (um) => um.method === request.method && um.pattern.test(request.url),
   );
-  console.log (`%c${request.method} ${path}`, "color: blue");
-  
+  console.log(`%c${request.method} ${path}`, "color: blue");
+
   if (!mapping) {
     return new Response("Not found", { status: 404 });
   }

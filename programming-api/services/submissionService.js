@@ -16,12 +16,6 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
   let result;
 
   try {
-    console.log("Attempting to submit solution with params:", {
-      userUuid,
-      assignmentId,
-      code,
-    });
-
     if (
       userUuid === undefined ||
       assignmentId === undefined ||
@@ -34,27 +28,15 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
       });
       throw new Error("Missing required parameters");
     }
-    console.log("Checking for existing submission...");
-    console.log("DEBUG: assignmentId before query:", assignmentId);
-    console.log("DEBUG: code before query:", code);
+
     const existingSubmission = await sql`
       SELECT status, grader_feedback, correct FROM programming_assignment_submissions
       WHERE programming_assignment_id = ${assignmentId}
       AND code = ${code}
       LIMIT 1
     `;
-    console.log("Existing submission query result:", existingSubmission);
 
     if (existingSubmission.length > 0) {
-      console.log("Existing submission found. Inserting with existing data.");
-      console.log("DEBUG: Inserting with values:", {
-        assignmentId,
-        code,
-        userUuid,
-        status: existingSubmission[0].status,
-        grader_feedback: existingSubmission[0].grader_feedback,
-        correct: existingSubmission[0].correct,
-      });
       result = await sql`
         INSERT INTO programming_assignment_submissions (programming_assignment_id, code, user_uuid, status, grader_feedback, correct)
         VALUES (${assignmentId}, ${code}, ${userUuid}, ${existingSubmission[0].status}, ${existingSubmission[0].grader_feedback}, ${existingSubmission[0].correct})
@@ -74,19 +56,9 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
         RETURNING *
       `;
     }
-    console.log("Insert operation result:", result);
-
-    console.log("Solution submitted successfully:", result);
 
     return { status: "ok", ...result[0] };
   } catch (error) {
-    console.error("Error submitting solution for grading:", error);
-    console.error("Error details:", {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-      code: error.code,
-    });
     if (error.code === "23505") {
       // Unique constraint violation
       return {

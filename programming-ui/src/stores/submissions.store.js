@@ -36,27 +36,16 @@ function createWebSocketConnection() {
 }
 
 function handleWebSocketMessage(data) {
+  console.log("Handling websocket message:", data);
   switch (data.type) {
     case "submission_update":
-      updateSubmission(data.submission);
+      console.log("Handling submission update:", data.submission);
+      submissionStore.addOrUpdateSubmission(data.submission);
       break;
 
     default:
       console.log("Unknown message type:", data.type);
   }
-}
-
-function updateSubmission(submission) {
-  submissionStore.update((store) => {
-    const index = store.findIndex((sub) => sub.id === submission.id);
-    if (index !== -1) {
-      store[index] = { ...store[index], ...submission };
-    } else {
-      store.push(submission);
-    }
-    localStorage.setItem("submissions", JSON.stringify(store));
-    return store;
-  });
 }
 
 function createSubmissionStore() {
@@ -118,6 +107,23 @@ function createSubmissionStore() {
         return newState;
       });
     },
+
+    addOrUpdateSubmission: (submission) => {
+      update((s) => {
+        const index = s.findIndex((item) => item.id === submission.id);
+        let newState;
+        if (index !== -1) {
+          newState = s.map((item) =>
+            item.id === submission.id ? { ...item, ...submission } : item
+          );
+        } else {
+          newState = [...s, submission];
+        }
+        localStorage.setItem("submissions", JSON.stringify(newState));
+        return newState;
+      });
+    },
+
     clearSubmissions: () => {
       console.log("Resetting submissions store...");
       set([]);
@@ -143,10 +149,6 @@ function createSubmissionStore() {
           return newState;
         });
       }
-
-      //   try {
-      //    const responseToSubmissionFromServer =
-      //  }
 
       return result;
     },
@@ -184,6 +186,12 @@ function createSubmissionStore() {
         (submission) => submission.programming_assignment_id === assignment_id
       );
     },
+    getSubmissionsForAssignment: (assignment_id) => {
+      return get(submissionStore).filter(
+        (submission) => submission.programming_assignment_id === assignment_id
+      );
+    },
+
     lastSubmission: (assignment_id) => {
       return get(submissionStore).filter(
         (submission) => submission.programming_assignment_id === assignment_id
