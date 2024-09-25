@@ -1,11 +1,10 @@
 import { serve } from "./deps.js";
+import { getRedisClient } from "./database/redis.js";
+
 import { grade } from "./services/gradingService.js";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 const codeSubmissionValidator = z.object({
-  assignment: z.number().positive(),
-  user: z.string(),
-  code: z.string(),
-  testCode: z.string(),
+  submissionId: z.number().positive(),
 });
 
 let state = -1;
@@ -52,21 +51,14 @@ const post_for_grading = async (req, mappingResult) => {
       return new Response("Invalid submission", { status: 400 });
     }
 
-    const { assignment, user, code, testCode } = result.data;
-
-    result = await grade(code, testCode);
-
-    console.log(
-      `%c assignment: ${assignment}\nUSER:\n ${user}\n code: \n${code}\n test code:\n ${testCode}\n`,
-      "color: green",
-    );
+    const { submissionId } = result.data;
+    // result = await grade(code, testCode);
+    console.log(`Submission ID: ${submissionId}`);
   } catch (error) {
     console.log("Error parsing JSON", error);
   }
-  // const code = requestData.code || getCode();
-  // const testCode = requestData.testCode || "";
 
-  return new Response(JSON.stringify({ result: result }));
+  return new Response(JSON.stringify({ result: "Submission received" }));
 };
 
 const urlMap = [
@@ -147,5 +139,41 @@ const handleRequest = async (request) => {
   return await mapping.fn(request, mappingResult);
 };
 
-const portConfig = { port: 7000, hostname: "0.0.0.0" };
-serve(handleRequest, portConfig);
+//const portConfig = { port: 7000, hostname: "0.0.0.0" };
+
+//serve(handleRequest, portConfig);
+
+/*
+CREATE TABLE programming_assignment_submissions (
+  id SERIAL PRIMARY KEY,
+  programming_assignment_id INTEGER REFERENCES programming_assignments(id),
+  code TEXT NOT NULL,
+  user_uuid TEXT NOT NULL,
+  status SUBMISSION_STATUS NOT NULL DEFAULT 'pending',
+  grader_feedback TEXT,
+  correct BOOLEAN DEFAULT FALSE,
+  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+*/
+
+// Function to poll messages from the 'submissions' list
+async function pollSubmissions() {
+  const client = await getRedisClient();
+
+  while (true) {
+    try {
+      // Pop a message from the right end of the 'submissions' list
+      client.rpop("submissions").then((message) => {
+        console.log("Received submission:", message);
+      });
+    } catch (error) {
+      console.error("Error polling submissions:", error);
+      // Wait before retrying in case of error
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+}
+
+// Start polling
+pollSubmissions();
