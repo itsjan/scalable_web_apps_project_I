@@ -3,16 +3,10 @@
 import * as submissionService from "../services/submissionService.js";
 
 const submitSolutionForGrading = async (c, ws) => {
-  console.log("Starting submitSolutionForGrading function");
-  console.log("c ........:", { ...c });
   const assignmentId = c.req.param("assignmentId");
   const userUuid = c.req.param("userUuid");
   const body = await c.req.json();
   const code = body.code;
-
-  console.log("User ........:", { ...c });
-  console.log("Assignment ID:", assignmentId);
-  console.log("Code:", code);
 
   try {
     const result = await submissionService.submitSolutionForGrading(
