@@ -19,14 +19,16 @@ services:
       - 7800:7800
 
   redis:
-    image: redis:latest
-    command: redis-server /usr/local/etc/redis/redis.conf
-    volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    image: redis/redis-stack:latest
+    #command: redis-server /usr/local/etc/redis/redis.conf
+    #volumes:
+    #  - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     expose:
       - 6379
+      - 8001
     ports:
       - 6379:6379
+      - 8001:8001
 
   programming-api:
     build: programming-api

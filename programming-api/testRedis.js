@@ -7,4 +7,10 @@ const foo = await client.get("foo");
 
 console.log(ok, foo);
 
-await client.xAdd("assignments_to_grade", "*", { assignment_id: 22 });
+client.lpush("mylist", "21");
+client.lpush("mylist", "22");
+client.lpush("mylist", "23");
+client.lpush("mylist", "24");
+client.lpush("mylist", "25");
+
+console.log(await client.rpop("mylist"));

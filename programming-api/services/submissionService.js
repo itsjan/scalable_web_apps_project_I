@@ -1,5 +1,5 @@
 import { sql } from "../database/database.js";
-
+import { getRedisClient } from "../database/redis.js";
 /*
 CREATE TABLE programming_assignment_submissions (
   id SERIAL PRIMARY KEY,
@@ -49,12 +49,19 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
         code,
         userUuid,
       });
+
       // new submission
       result = await sql`
         INSERT INTO programming_assignment_submissions (programming_assignment_id, code, user_uuid, status)
         VALUES (${assignmentId}, ${code}, ${userUuid}, 'pending')
         RETURNING *
       `;
+
+      console.log("DEBUG: Getting Redis client");
+      const redisClient = await getRedisClient();
+      console.log("DEBUG: Pushing submission ID to Redis:", result[0].id);
+      await redisClient.lpush("submissions", result[0].id);
+      console.log("DEBUG: Submission ID pushed to Redis successfully");
     }
 
     return { status: "ok", ...result[0] };
