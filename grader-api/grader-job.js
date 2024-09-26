@@ -25,8 +25,8 @@ async function pollSubmissions() {
       // Pop a message from the right end of the 'submissions' list
       const message = await client.rpop("submissions");
 
-      if (message) {
-        console.log("Received submission:", message);
+      if (message !== null) {
+        if (message) console.log("Received ssssubmission:", message);
         // Parse the message JSON
         const submission = JSON.parse(message);
         console.log("Parsed submission:", submission);

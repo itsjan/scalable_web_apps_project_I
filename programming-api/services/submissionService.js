@@ -10,6 +10,14 @@ CREATE TABLE programming_assignment_submissions (
   grader_feedback TEXT,
   correct BOOLEAN DEFAULT FALSE,
   last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+  CREATE TABLE programming_assignments (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    assignment_order INTEGER NOT NULL,
+    handout TEXT NOT NULL,
+    test_code TEXT NOT NULL
+  );
 );
 */
 const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
@@ -42,6 +50,8 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
         VALUES (${assignmentId}, ${code}, ${userUuid}, ${existingSubmission[0].status}, ${existingSubmission[0].grader_feedback}, ${existingSubmission[0].correct})
         RETURNING *
       `;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // TODO: Update the submission in the database
     } else {
       console.log("No existing submission found. Inserting new submission.");
       console.log("DEBUG: Inserting new submission with values:", {
@@ -57,10 +67,22 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
         RETURNING *
       `;
 
+      const submissionId = result[0].id;
+
+      result = await sql`
+          SELECT pas.id, pas.user_uuid, pas.programming_assignment_id, pas.code, pa.test_code
+          FROM programming_assignment_submissions as pas
+          INNER JOIN programming_assignments as pa ON pas.programming_assignment_id = pa.id
+          WHERE pas.id = ${submissionId}
+
+        `;
+
+      console.log(result[0]);
+
       console.log("DEBUG: Getting Redis client");
       const redisClient = await getRedisClient();
-      console.log("DEBUG: Pushing submission ID to Redis:", result[0].id);
-      await redisClient.lpush("submissions", result[0].id);
+      console.log("DEBUG: Pushing submission ID to Redis:", result[0]);
+      await redisClient.lpush("submissions", JSON.stringify(result[0]));
       console.log("DEBUG: Submission ID pushed to Redis successfully");
     }
 
@@ -82,6 +104,51 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
       message: "Failed to submit solution for grading",
       error: error.message,
     };
+  }
+};
+
+/*
+CREATE TABLE programming_assignment_submissions (
+  id SERIAL PRIMARY KEY,
+  programming_assignment_id INTEGER REFERENCES programming_assignments(id),
+  code TEXT NOT NULL,
+  user_uuid TEXT NOT NULL,
+  status SUBMISSION_STATUS NOT NULL DEFAULT 'pending',
+  grader_feedback TEXT,
+  correct BOOLEAN DEFAULT FALSE,
+  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  CREATE TYPE SUBMISSION_STATUS AS ENUM ('pending', 'processed');
+  */
+
+const updateGraderFeedback = async (
+  userUuid,
+  submissionId,
+  graderFeedback,
+  correct,
+  status = "processed",
+) => {
+  console.log("Updating grader feedback with parameters:", {
+    userUuid,
+    submissionId,
+    graderFeedback,
+    correct,
+    status,
+  });
+
+  try {
+    const result = await sql`
+        UPDATE programming_assignment_submissions
+        SET status = ${status}, grader_feedback = ${graderFeedback}, correct = ${correct}
+        WHERE id = ${submissionId}
+          AND user_uuid = ${userUuid}
+        RETURNING *
+      `;
+
+    console.log("Update result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error updating grader feedback:", error);
+    throw error;
   }
 };
 
@@ -139,4 +206,5 @@ export {
   correctSubmission,
   correctSubmissionsByUser,
   getAllSubmissionsByUser,
+  updateGraderFeedback,
 };

@@ -1,170 +1,46 @@
-import { serve } from "./deps.js";
 import { getRedisClient } from "./database/redis.js";
-
 import { grade } from "./services/gradingService.js";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-const codeSubmissionValidator = z.object({
-  submissionId: z.number().positive(),
-});
-
-let state = -1;
-
-const getCode = () => {
-  state = (state + 1) % 5;
-
-  if (state == 0) {
-    return `
-def hello():
-  return "Hello world!"
-`;
-  } else if (state == 1) {
-    return `
-def hello():
-  return "hello world!"
-    `;
-  } else if (state == 2) {
-    return `
-def ohnoes():
-  return "Hello world!"
-    `;
-  } else if (state == 3) {
-    return `
-:D
-      `;
-  } else {
-    return `
-while True:
-  print("Hmmhmm...")
-    `;
-  }
-};
-const post_ping = (req, mappingResult) => {
-  return new Response("POST PING", { status: 200 });
-};
-
-const post_for_grading = async (req, mappingResult) => {
-  let result;
-
-  try {
-    const result = codeSubmissionValidator.safeParse(await req.json());
-    if (!result.success) {
-      return new Response("Invalid submission", { status: 400 });
-    }
-
-    const { submissionId } = result.data;
-    // result = await grade(code, testCode);
-    console.log(`Submission ID: ${submissionId}`);
-  } catch (error) {
-    console.log("Error parsing JSON", error);
-  }
-
-  return new Response(JSON.stringify({ result: "Submission received" }));
-};
-
-const urlMap = [
-  {
-    method: "POST",
-    pattern: new URLPattern({ pathname: "/api/grade/ping" }),
-    fn: post_ping,
-  },
-  {
-    method: "POST",
-    pattern: new URLPattern({ pathname: "/api/grade/" }),
-    fn: post_for_grading,
-  },
-];
-
-const gradingDemo = async () => {
-  let code = getCode();
-
-  const testCode = `
-import socket
-def guard(*args, **kwargs):
-  raise Exception("Internet is bad for you :|")
-socket.socket = guard
-
-import unittest
-from code import *
-
-class TestHello(unittest.TestCase):
-
-  def test_hello(self):
-    self.assertEqual(hello(), "Hello world!", "Function should return 'Hello world!'")
-
-if __name__ == '__main__':
-  unittest.main()
-`;
-
-  return await grade(code, testCode);
-};
-
-const _del_handleRequest = async (request) => {
-  // the starting point for the grading api grades code following the
-  // gradingDemo function, but does not e.g. use code from the user
-  let result;
-  try {
-    const requestData = await request.json();
-
-    console.log("Request data:");
-    console.log(requestData);
-
-    const code = requestData.code;
-    const testCode = requestData.testCode;
-
-    result = await grade(code, testCode);
-  } catch (e) {
-    result = await gradingDemo();
-  }
-
-  // in practice, you would either send the code to grade to the grader-api
-  // or use e.g. a message queue that the grader api would read and process
-
-  return new Response(JSON.stringify({ result: result }));
-};
-
-const handleRequest = async (request) => {
-  //console.log(request);
-  const path = new URL(request.url).pathname;
-
-  const mapping = urlMap.find(
-    (um) => um.method === request.method && um.pattern.test(request.url),
-  );
-  console.log(`%c${request.method} ${path}`, "color: blue");
-
-  if (!mapping) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  const mappingResult = mapping.pattern.exec(request.url);
-  return await mapping.fn(request, mappingResult);
-};
-
-//const portConfig = { port: 7000, hostname: "0.0.0.0" };
-
-//serve(handleRequest, portConfig);
-
-/*
-CREATE TABLE programming_assignment_submissions (
-  id SERIAL PRIMARY KEY,
-  programming_assignment_id INTEGER REFERENCES programming_assignments(id),
-  code TEXT NOT NULL,
-  user_uuid TEXT NOT NULL,
-  status SUBMISSION_STATUS NOT NULL DEFAULT 'pending',
-  grader_feedback TEXT,
-  correct BOOLEAN DEFAULT FALSE,
-  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-*/
 
 // Function to poll messages from the 'submissions' list
 async function pollSubmissions() {
   const client = await getRedisClient();
 
   while (true) {
+    let result = null;
     try {
       // Pop a message from the right end of the 'submissions' list
-      client.rpop("submissions").then((message) => {
-        console.log("Received submission:", message);
+      client.rpop("submissions").then(async (message) => {
+        if (message !== null) {
+          console.log("Received submission:", message);
+          const submission = JSON.parse(message);
+          console.log("Parsed submission:", submission);
+
+          const code = submission.code;
+          const testCode = submission.test_code;
+
+          try {
+            result = await grade(code, testCode);
+          } catch (e) {
+            console.log("Error grading submission:", e);
+          } finally {
+            console.log("RESULT BEGIN:");
+            console.log(result);
+            console.log("RESULT END:");
+
+            const isCorrect = result.includes("\nOK") || false;
+
+            const gradingResult = {
+              user_uuid: submission.user_uuid,
+              id: submission.id,
+              grader_feedback: result,
+              correct: isCorrect,
+              status: "processed",
+            };
+            console.log("Grading result:", gradingResult);
+
+            client.lpush("results", JSON.stringify(gradingResult));
+          }
+        }
       });
     } catch (error) {
       console.error("Error polling submissions:", error);
