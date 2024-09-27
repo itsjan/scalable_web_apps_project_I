@@ -70,7 +70,7 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
       const submissionId = result[0].id;
 
       result = await sql`
-          SELECT pas.id, pas.user_uuid, pas.programming_assignment_id, pas.code, pa.test_code
+          SELECT pas.id, pas.status, pas.user_uuid, pas.programming_assignment_id, pas.code, pa.test_code
           FROM programming_assignment_submissions as pas
           INNER JOIN programming_assignments as pa ON pas.programming_assignment_id = pa.id
           WHERE pas.id = ${submissionId}
@@ -86,7 +86,7 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
       console.log("DEBUG: Submission ID pushed to Redis successfully");
     }
 
-    return { status: "ok", ...result[0] };
+    return { submissionStatus: "ok", ...result[0] };
   } catch (error) {
     if (error.code === "23505") {
       // Unique constraint violation
