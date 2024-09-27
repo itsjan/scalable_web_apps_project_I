@@ -22,7 +22,6 @@
     }
   };
 
-
   selectedAssignment.subscribe((value) => {
     assignment_value = value;
     if (submissionStore.hasSubmissions(assignment_value.id)) {
@@ -32,13 +31,10 @@
       if (editor ) {
         insertText(editor, "# Write your code here", 0, editor.value.length, 0, 0);
       }
-
     }
-
   });
 
   let submissions
-
 
   onMount(() => {
 
@@ -47,7 +43,6 @@
       console.log("SUBMISSIONS STORE UPDATED", value);
       submissions = value;
     });
-
 
     if (editorElement) {
       editor = basicEditor(
@@ -63,24 +58,7 @@
     }
   });
 
-  const doSimpleGradingDemo = async () => {
-    const data = {
-      assignment: assignment_value,
-      user: $userUuid,
-      code: editor.value,
-      testCode: "testi",
-    };
 
-    const response = await fetch("/api/grade/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    console.log(response);
-  };
 
   const submitSolution = async () => {
     if ( assignment_value ) {
@@ -89,14 +67,8 @@
         editor.value
       );
       console.log(result);
-    } else {
-      alert("Please select an assignment first");
     }
-
   };
-
-
-
 
 </script>
 
@@ -104,30 +76,6 @@
   <div class="card-body">
     <h2 class="card-title">{$selectedAssignment.title}</h2>
     <p>{$selectedAssignment.handout}</p>
-
-
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold mb-2">Submissions:</h3>
-      {#if submissions && submissions.length > 0}
-        <ul class="list-disc pl-5">
-          {#each submissions as submission}
-            <li>
-              Status: {submission.status},
-              ID: {submission.id},
-              Assignment ID: {submission.programming_assignment_id},
-              Code: {submission.code.substring(0, 20)}...
-            </li>
-          {/each}
-        </ul>
-      {:else}
-        <p>No submissions available.</p>
-      {/if}
-    </div>
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold mb-2">Selected Assignment:</h3>
-      <p>ID: {$selectedAssignment.id}</p>
-
-    </div>
 
 
     <!-- Start of submission timeline -->
@@ -154,9 +102,7 @@
     ></div>
 
     <div class="card-actions justify-end">
-      <button class="btn btn-outline" on:click={doSimpleGradingDemo}>
-        Do grading demo!
-      </button>
+
 
       <button class="btn btn-primary" on:click={submitSolution}>
         Submit solution

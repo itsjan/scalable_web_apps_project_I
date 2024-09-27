@@ -54,48 +54,24 @@
     $: console.log("Current submission store value:", $submissionStore);
 </script>
 
-<p>Resolved assignment IDs: {$resolvedAssignmentIds.join(", ")}</p>
-
+<h3 class="text-lg font-semibold mb-2">Select assignment:</h3>
 <ul class="timeline">
     {#each assignments as assignment, index}
         <li>
             <hr class:bg-primary={index <= maxResolvedAssignmentId} />
             <div class="timeline-start">{index + 1}</div>
             <div class="timeline-middle">
-                {#if index <= maxResolvedAssignmentId}
+                {#if $resolvedAssignmentIds.includes(assignment.id)}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                         class="text-primary h-5 w-5"
                     >
-                        <path
-                            fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                            clip-rule="evenodd"
-                        />
+                        <circle cx="10" cy="10" r="8" fill="currentColor" />
+                        <path fill="white" d="M14.293 6.293a1 1 0 011.414 1.414l-6 6a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L9 11.586l5.293-5.293z" />
                     </svg>
-                {:else if submissionStore.hasPendingSolution(assignment.id)}
-                    <span class="loading loading-ball loading-lg text-accent"
-                    ></span>
-                {:else if submissionStore.hasCorrectSolution(assignment.id)}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        class="text-green-500 h-5 w-5"
-                    >
-                        <circle cx="10" cy="10" r="8" />
-                    </svg>
-                {:else if submissionStore.hasIncorrectSolution(assignment.id)}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        class="text-red-500 h-5 w-5"
-                    >
-                        <circle cx="10" cy="10" r="8" />
-                    </svg>
+
                 {:else}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +86,7 @@
             <div
                 on:click={() => selectAssignment(assignment, index + 1)}
                 class="timeline-end timeline-box cursor-pointer"
-                class:selected={$selectedAssignment === assignment}
+                class:bg-accent={$selectedAssignment === assignment}
                 class:disabled={index !== 0 && index > maxResolvedAssignmentId}
             >
                 {assignment.title}
@@ -137,9 +113,7 @@
 {/if}
 
 <style>
-    .selected {
-        background-color: #e0e0e0;
-    }
+
     .disabled {
         opacity: 0.5;
         cursor: not-allowed;
