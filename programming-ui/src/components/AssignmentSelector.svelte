@@ -3,14 +3,13 @@
     import { userUuid } from "../stores/stores.js";
     import { selectedAssignment } from "../stores/assignments.svelte.js";
     import * as assignmentsApi from "../lib/http-actions/assignments-api.js";
-    import { submissionStore } from "../stores/submissions.store.js";
+    import { submissionStore, resolvedAssignmentIds } from "../stores/submissions.store.js";
     import CodeEditor from "../components/CodeEditor.svelte";
 
-    export let lastOneCompleted = 1;
     let selectedAssignment_value;
     let submissions = [];
     let localSubmissions = []; // Store for local submission data
-
+    let maxResolvedAssignmentId = 0;
 
     function changeUrl(pageNumber) {
       let newUrl = `/${$userUuid}/${pageNumber}`;
@@ -18,28 +17,28 @@
       window.history.pushState({}, '', newUrl);
     }
 
-
-    // Subscribe to submissionStore
+    // Subscribe to submissionStore and resolvedAssignmentIds
     $: {
         localSubmissions = $submissionStore;
         console.log("Submission store updated:", localSubmissions);
+        maxResolvedAssignmentId = Math.max(0, ...$resolvedAssignmentIds);
     }
 
     let assignments = [];
     onMount(async () => {
         assignments = await assignmentsApi.getAssignments();
         console.log("Assignments initialized");
-        if (assignments.length > 0 && lastOneCompleted < assignments.length) {
-            selectAssignment(assignments[lastOneCompleted], lastOneCompleted + 1);
+        if (assignments.length > 0) {
+            selectAssignment(assignments[0], 1);
         }
         await fetchSubmissions();
     });
 
     function selectAssignment(assignment, pageNumber) {
-        selectedAssignment.set(assignment);
-        changeUrl(pageNumber);
-
-
+        if (pageNumber === 1 || pageNumber <= maxResolvedAssignmentId + 1) {
+            selectedAssignment.set(assignment);
+            changeUrl(pageNumber);
+        }
     }
 
     async function fetchSubmissions() {
@@ -55,13 +54,15 @@
     $: console.log("Current submission store value:", $submissionStore);
 </script>
 
+<p>Resolved assignment IDs: {$resolvedAssignmentIds.join(", ")}</p>
+
 <ul class="timeline">
     {#each assignments as assignment, index}
         <li>
-            <hr class:bg-primary={index < lastOneCompleted} />
+            <hr class:bg-primary={index <= maxResolvedAssignmentId} />
             <div class="timeline-start">{index + 1}</div>
             <div class="timeline-middle">
-                {#if index < lastOneCompleted}
+                {#if index <= maxResolvedAssignmentId}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -110,10 +111,11 @@
                 on:click={() => selectAssignment(assignment, index + 1)}
                 class="timeline-end timeline-box cursor-pointer"
                 class:selected={$selectedAssignment === assignment}
+                class:disabled={index !== 0 && index > maxResolvedAssignmentId}
             >
                 {assignment.title}
             </div>
-            <hr class:bg-primary={index < lastOneCompleted} />
+            <hr class:bg-primary={index <= maxResolvedAssignmentId} />
         </li>
     {/each}
 </ul>
@@ -134,12 +136,12 @@
     {/if}
 {/if}
 
-
-
-
-
 <style>
     .selected {
         background-color: #e0e0e0;
+    }
+    .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 </style>

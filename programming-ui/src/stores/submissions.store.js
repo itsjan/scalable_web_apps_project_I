@@ -1,5 +1,5 @@
 // submission-store.js
-import { writable } from "svelte/store";
+import { writable, derived } from "svelte/store";
 import {
   correctSubmissionsByUser,
   getAllSubmissionsByUser,
@@ -202,7 +202,19 @@ function createSubmissionStore() {
 
 export const submissionStore = createSubmissionStore();
 
-// Console log for debugging
+export const resolvedAssignmentIds = derived(
+  submissionStore,
+  ($submissionStore) => {
+    // Return an array of unique assignment ids that have been resolved by the user
+    const resolvedIds = new Set(
+      $submissionStore
+        .filter((submission) => submission.status === "processed")
+        .map((submission) => submission.programming_assignment_id)
+    );
+
+    return Array.from(resolvedIds);
+  }
+); // Console log for debugging
 submissionStore.subscribe((value) => {
   console.log("Current submission store value:", value);
 });
