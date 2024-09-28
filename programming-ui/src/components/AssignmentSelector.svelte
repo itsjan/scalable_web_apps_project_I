@@ -57,6 +57,7 @@
 <div class="flex justify-center bg-inherit ">
 <ul class="timeline">
     {#each assignments as assignment, index}
+        {#if index <= maxResolvedAssignmentId }
         <li>
             <hr class:bg-primary={index <= maxResolvedAssignmentId} />
             <div class="timeline-start">{index + 1}</div>
@@ -72,7 +73,7 @@
                         <path fill="white" d="M14.293 6.293a1 1 0 011.414 1.414l-6 6a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L9 11.586l5.293-5.293z" />
                     </svg>
 
-                {:else}
+                {:else }
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -90,9 +91,13 @@
                 class:disabled={index !== 0 && index > maxResolvedAssignmentId}
             >
                 {assignment.title}
+                {#if index === maxResolvedAssignmentId}
+                    <span class="badge badge-accent ml-2">new</span>
+                {/if}
             </div>
             <hr class:bg-primary={index <= maxResolvedAssignmentId} />
         </li>
+        {/if}
     {/each}
 </ul>
 </div>
