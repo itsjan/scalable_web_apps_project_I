@@ -127,11 +127,13 @@
   <div class="card-body">
     <!-- Assignment -->
     <h2 class="card-title">{$selectedAssignment.title}</h2>
-    <p>{$selectedAssignment.handout}</p>
+    <p class="handout">
+      {$selectedAssignment.handout}
+    </p>
     <!-- Editor -->
 
         <div bind:this={editorElement}
-        class="textarea textarea-bordered editor-container mb-4 rounded"
+        class="editor-container mb-4 text-xl"
         on:keydown={(e) => e.ctrlKey && e.key === "Enter" && submitSolution()}
         ></div>
     <!-- End of editor -->
@@ -199,10 +201,10 @@
             ? ' skeleton'
             : ''}"
         >
-          <h3 class="text-lg font-semibold mb-2">Grader Feedback:</h3>
+          <h2 class="text-lg font-semibold mb-2">Grader Feedback:</h2>
 
           {#if selectedSubmissions?.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== "pending"}
-            <p>
+            <p class="feedback">
                 {@html selectedSubmissions.get(assignment_value.id).grader_feedback.replace(/\n/g, '<br />')}
             </p>
           {/if}
@@ -216,3 +218,7 @@
     <!-- End of submission timeline -->
   </div>
 </div>
+
+<style>
+
+</style>

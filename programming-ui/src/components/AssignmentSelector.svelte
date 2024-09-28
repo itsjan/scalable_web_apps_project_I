@@ -54,7 +54,7 @@
     $: console.log("Current submission store value:", $submissionStore);
 </script>
 
-<h3 class="text-lg font-semibold mb-2">Select assignment:</h3>
+<div class="flex justify-center bg-inherit ">
 <ul class="timeline">
     {#each assignments as assignment, index}
         <li>
@@ -95,6 +95,7 @@
         </li>
     {/each}
 </ul>
+</div>
 
 
 

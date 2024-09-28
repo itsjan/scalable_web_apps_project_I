@@ -6,16 +6,16 @@
 
 </script>
 
-<div class="navbar bg-primary text-primary-content">
+<div class="navbar bg-black text-primary-content">
     <div class="flex-1">
-        <p class="font-mono text-xl">Programming UI</p>
+        <p class="topbarlogo text-2xl">Programming Assignments</p>
     </div>
     <div class="flex-none gap-2">
         {#if $userUuid}
 
             <div class="tooltip tooltip-left" data-tip="ooo{$userUuid}">
 
-                <span class="badge badge-lg badge-accent">XP{$pointsEarned}</span>
+                <span class="badge badge-lg badge-accent silkscreen-bold">XP{$pointsEarned}</span>
             </div>
         {/if}
     </div>
