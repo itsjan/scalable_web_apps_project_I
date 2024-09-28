@@ -119,7 +119,7 @@
         <div class="flex flex-wrap gap-2">
           {#each $submissionStore.filter(sub => sub.programming_assignment_id === assignment_value.id) as submission (submission.id)}
             <!-- Debug log to check filtered submissions -->
-            {console.log('Filtered submission:', submission)}
+
             <div
               class={`badge gap-2 ${
                 submission.status === 'pending'
@@ -127,7 +127,7 @@
                   : submission.correct
                     ? 'badge-success'
                     : 'badge-error'
-              } ${selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).id === submission.id ? 'ring-2 ring-offset-2 ring-primary' : 'badge-outline'}`}
+              } ${selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).id === submission.id ? 'badge-primary' : 'badge-outline'}`}
               on:click={() => handleSubmissionClick(submission)}
               style="cursor: pointer; transition: background-color 0.3s;"
             >
