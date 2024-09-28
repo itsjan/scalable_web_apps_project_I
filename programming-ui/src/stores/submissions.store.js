@@ -215,7 +215,7 @@ export const resolvedAssignmentIds = derived(
     // Return an array of unique assignment ids that have been resolved by the user
     const resolvedIds = new Set(
       $submissionStore
-        .filter((submission) => submission.status === "processed")
+        .filter((submission) => submission.correct)
         .map((submission) => submission.programming_assignment_id)
     );
 
