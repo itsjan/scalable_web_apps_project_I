@@ -221,7 +221,19 @@ export const resolvedAssignmentIds = derived(
 
     return Array.from(resolvedIds);
   }
-); // Console log for debugging
+);
+
+export const pointsEarned = derived(submissionStore, ($submissionStore) => {
+  // 100 points for each resolved assignment id
+  const num = new Set(
+    $submissionStore
+      .filter((submission) => submission.correct)
+      .map((submission) => submission.programming_assignment_id)
+  ).size;
+  return 100 * num;
+});
+
+// Console log for debugging
 submissionStore.subscribe((value) => {
   console.log("Current submission store value:", value);
 });

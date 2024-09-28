@@ -3,17 +3,9 @@
     import { cubicIn, cubicOut } from "svelte/easing";
     //import PointsDisplay from '../components/PointsDisplay.svelte';
     import { userUuid } from "../stores/stores.js";
+    import { pointsEarned } from "../stores/submissions.store.js";
 
-    let showDropdownMenu = false;
-    let showProfileDropdown = false;
-
-    function toggleDropdownMenu() {
-        showDropdownMenu = !showDropdownMenu;
-    }
-
-    function toggleProfileDropdown() {
-        showProfileDropdown = !showProfileDropdown;
-    }
+    $ : console.log("Points earned:", $pointsEarned);
 </script>
 
 <div class="navbar bg-primary text-primary-content">
@@ -23,7 +15,7 @@
     <div class="flex-none gap-2">
         {#if $userUuid}
             <p>Hello, {$userUuid}</p>
-            <span class="badge badge-accent">100 points</span>
+            <span class="badge badge-accent">{$pointsEarned}</span>
         {/if}
     </div>
 </div>
