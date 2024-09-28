@@ -127,14 +127,14 @@
     <h2 class="card-title">{$selectedAssignment.title}</h2>
     <p>{$selectedAssignment.handout}</p>
     <!-- Editor -->
-    Please enter your solution here:
-    <div bind:this={editorElement}
-      class="textarea textarea-bordered editor-container mb-4 rounded"
-      on:keydown={(e) => e.ctrlKey && e.key === "Enter" && submitSolution()}
-    ></div>
+
+        <div bind:this={editorElement}
+        class="textarea textarea-bordered editor-container mb-4 rounded"
+        on:keydown={(e) => e.ctrlKey && e.key === "Enter" && submitSolution()}
+        ></div>
     <!-- End of editor -->
     <!-- Buttons: -->
-    <div class="card-actions justify-end">
+    <div class="card-actions place-content-center">
       <button
         class="btn btn-primary"
         disabled={$submissionStore.some(
@@ -181,6 +181,7 @@
             </div>
           {/each}
         </div>
+        <!-- Grader feedback -->
         <div
           class="mt-4 p-4 bg-base-200 rounded-lg
               ${selectedSubmissions?.get(assignment_value.id)?.status ===
@@ -192,10 +193,12 @@
 
           {#if selectedSubmissions?.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== "pending"}
             <p>
-              {selectedSubmissions.get(assignment_value.id).grader_feedback}
+                {@html selectedSubmissions.get(assignment_value.id).grader_feedback.replace(/\n/g, '<br />')}
             </p>
           {/if}
+
         </div>
+        <!-- End of grader feedback -->
       {:else}
         <p>No assignment selected</p>
       {/if}
