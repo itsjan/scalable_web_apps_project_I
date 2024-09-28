@@ -114,27 +114,35 @@
     <!-- Start of submission timeline -->
     <div class="overflow-x-auto">
       {#if assignment_value && assignment_value.id}
-        <div class="flex flex-wrap gap-2">
-          {#each $submissionStore.filter(sub => sub.programming_assignment_id === assignment_value.id) as submission (submission.id)}
-            <!-- Debug log to check filtered submissions -->
-            <div
-              class={`badge gap-2 ${
-                submission.status === 'pending'
-                  ? 'badge-warning'
-                  : submission.correct
-                    ? 'badge-success'
-                    : 'badge-error'
-              } ${selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).id === submission.id ? 'badge-primary' : 'badge-outline'}`}
-              on:click={() => handleSubmissionClick(submission)}
-              style="cursor: pointer; transition: background-color 0.3s;"
-            >
-              {submission.status === 'pending' ? 'Pending' : submission.correct ? 'Pass' : 'Fail'}
-            </div>
-          {/each}
+        <div class="join join-vertical w-full">
+            {#each submissionStore.getSubmissionsForAssignment(assignment_value.id) as submission (submission.id)}
+                  <div class="collapse collapse-arrow join-item border border-base-300">
+                    <input type="radio" name="my-accordion-4" checked={selectedSubmissions.get(assignment_value.id)?.id === submission.id} />
+                    <div class="collapse-title text-xl font-medium">
+                      <div
+                        class={`badge gap-2 ${
+                          submission.status === 'pending'
+                            ? 'badge-warning'
+                            : submission.correct
+                              ? 'badge-success'
+                              : 'badge-error'
+                        } ${selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).id === submission.id ? 'badge-primary' : 'badge-outline'}`}
+                        on:click={() => handleSubmissionClick(submission)}
+                        style="cursor: pointer; transition: background-color 0.3s;"
+                      >
+                        {submission.status === 'pending' ? 'Pending' : submission.correct ? 'Pass' : 'Fail'}
+                      </div>
+                      { submission.id }
+                    </div>
+                    <div class="collapse-content">
+                        {#if submission.status !== 'pending' }
+                      <p>Grader Feedback: {submission.grader_feedback }</p>
+                      {/if}
+                    </div>
+                  </div>
+                {/each}
+
         </div>
-        {#if selectedSubmissions.get(assignment_value.id)}
-          <p class="mt-4">Grader Feedback: {selectedSubmissions.get(assignment_value.id).grader_feedback}</p>
-        {/if}
       {:else}
         <p>No assignment selected</p>
       {/if}

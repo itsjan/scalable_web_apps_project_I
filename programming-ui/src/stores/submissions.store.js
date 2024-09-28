@@ -187,9 +187,16 @@ function createSubmissionStore() {
       );
     },
     getSubmissionsForAssignment: (assignment_id) => {
-      return get(submissionStore).filter(
-        (submission) => submission.programming_assignment_id === assignment_id
+      console.log(
+        `******** Getting submissions for assignment: ${assignment_id}`
       );
+      const filteredAndSorted = get(submissionStore)
+        .filter(
+          (submission) => submission.programming_assignment_id === assignment_id
+        )
+        .sort((a, b) => Number.parseInt(a.id) - Number.parseInt(b.id));
+      console.log("Filtered and sorted submissions:", filteredAndSorted);
+      return filteredAndSorted;
     },
 
     lastSubmission: (assignment_id) => {
