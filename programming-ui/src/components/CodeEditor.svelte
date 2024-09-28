@@ -106,7 +106,7 @@
   });
 
   const submitSolution = async () => {
-    if (submissionStore.some(
+    if ($submissionStore.some(
       (submission) => submission.status === "pending"
     )) return;
     if (assignment_value) {
