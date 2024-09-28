@@ -3,7 +3,7 @@
   import { onMount, tick } from "svelte";
   import { basicEditor } from "prism-code-editor/setups";
   import { selectedAssignment } from "../stores/assignments.svelte";
-  import { submitSolutionForGrading} from "../lib/http-actions/submissions-api.js";
+  import { submitSolutionForGrading } from "../lib/http-actions/submissions-api.js";
   import { submissionStore } from "../stores/submissions.store.js";
   import "prism-code-editor/prism/languages/markup";
   import "prism-code-editor/prism/languages/python";
@@ -12,7 +12,6 @@
   let editorElement;
   let submissionTimelineElement;
 
-
   let editor;
   let assignment_value;
   // Map to keep track of which submissions are selected for each assignment.
@@ -20,45 +19,56 @@
   let selectedSubmissions;
 
   const loadSubmission = (submission) => {
-    console.log('Loading submission:', submission);
+    console.log("Loading submission:", submission);
     if (editor && submission.code) {
       insertText(editor, submission.code, 0, editor.value.length, 0, 0);
     }
     selectedSubmissions?.set(submission.programming_assignment_id, submission);
     selectedSubmissions = selectedSubmissions;
-    console.log('Updated selectedSubmissions:', selectedSubmissions);
+    console.log("Updated selectedSubmissions:", selectedSubmissions);
   };
 
   selectedAssignment.subscribe((value) => {
-    console.log('Selected assignment changed:', value);
+    console.log("Selected assignment changed:", value);
     assignment_value = value;
     if (submissionStore.hasSubmissions(assignment_value.id)) {
       const selectedSubmission = selectedSubmissions?.get(assignment_value.id);
       if (selectedSubmission) {
-        console.log('Loading selected submission:', selectedSubmission);
+        console.log("Loading selected submission:", selectedSubmission);
         loadSubmission(selectedSubmission);
       } else {
-        const lastSubmission = submissionStore.lastSubmission(assignment_value.id);
+        const lastSubmission = submissionStore.lastSubmission(
+          assignment_value.id
+        );
         if (lastSubmission) {
-          console.log('Loading last submission:', lastSubmission);
+          console.log("Loading last submission:", lastSubmission);
           loadSubmission(lastSubmission);
         } else {
-          console.log('No submission found for assignment:', assignment_value.id);
+          console.log(
+            "No submission found for assignment:",
+            assignment_value.id
+          );
         }
       }
-    }
-    else {
-      console.log('No submissions found for assignment:', assignment_value.id);
+    } else {
+      console.log("No submissions found for assignment:", assignment_value.id);
       if (editor) {
-        insertText(editor, "# Write your code here", 0, editor.value.length, 0, 0);
+        insertText(
+          editor,
+          "\n\n",
+          0,
+          editor.value.length,
+          0,
+          0
+        );
       }
     }
   });
 
-  let submissions
+  let submissions;
 
   onMount(() => {
-    console.log('Component mounted');
+    console.log("Component mounted");
     selectedSubmissions = new Map();
 
     submissions = [];
@@ -75,7 +85,7 @@
         if (submissionTimelineElement) {
           submissionTimelineElement.scrollTo({
             left: submissionTimelineElement.scrollWidth,
-            behavior: 'smooth'
+            behavior: "smooth",
           });
         }
       }
@@ -96,13 +106,11 @@
   });
 
   const submitSolution = async () => {
-    if ( assignment_value ) {
-
+    if (assignment_value) {
       const result = await submitSolutionForGrading(
         assignment_value.id,
         editor.value
-      )
-
+      );
     }
   };
 
@@ -111,7 +119,6 @@
     selectedSubmissions.set(submission.programming_assignment_id, submission);
     selectedSubmissions = selectedSubmissions;
   };
-
 </script>
 
 <div class="card bg-base-100 shadow-xl">
@@ -122,21 +129,26 @@
     <!-- Start of submission timeline -->
     <div class="overflow-x-auto">
       {#if assignment_value && assignment_value.id}
-        <div bind:this={submissionTimelineElement} class="flex overflow-x-auto whitespace-nowrap" style="scroll-behavior: smooth;">
+        <div
+          bind:this={submissionTimelineElement}
+          class="flex overflow-x-auto whitespace-nowrap"
+          style="scroll-behavior: smooth;"
+        >
           {#each submissionStore.getSubmissionsForAssignment(assignment_value.id) as submission (submission.id)}
             <div
               class={`badge gap-2 mr-2 ${
-                submission.status === 'pending'
-                  ? 'badge-warning'
+                submission.status === "pending"
+                  ? "badge-warning"
                   : submission.correct
-                    ? 'badge-success'
-                    : 'badge-error'
-              } ${selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).id === submission.id ? 'badge-primary' : 'badge-outline'}`}
+                    ? "badge-success"
+                    : "badge-error"
+              } ${selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).id === submission.id ? "badge-primary" : "badge-outline"}`}
               on:click={() => handleSubmissionClick(submission)}
-              on:keydown={(e) =>  e.key === 'Enter' && handleSubmissionClick(submission)}
+              on:keydown={(e) =>
+                e.key === "Enter" && handleSubmissionClick(submission)}
               style="cursor: pointer; transition: background-color 0.3s;"
             >
-              {#if submission.status === 'pending'}
+              {#if submission.status === "pending"}
                 Pending
               {:else if submission.correct}
                 Pass
@@ -146,21 +158,21 @@
             </div>
           {/each}
         </div>
-          <div class="mt-4 p-4 bg-base-200 rounded-lg
-              ${
-                selectedSubmissions.get(assignment_value.id).status === 'pending'
-                  ? ' skeleton'
-                  : ''
-                }">
-            <h3 class="text-lg font-semibold mb-2">Grader Feedback:</h3>
+        <div
+          class="mt-4 p-4 bg-base-200 rounded-lg
+              ${selectedSubmissions.get(assignment_value.id).status ===
+          'pending'
+            ? ' skeleton'
+            : ''}"
+        >
+          <h3 class="text-lg font-semibold mb-2">Grader Feedback:</h3>
 
-        {#if selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== 'pending'}
-            <p>{selectedSubmissions.get(assignment_value.id).grader_feedback}</p>
-
-
-        {/if}
-
-            </div>
+          {#if selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== "pending"}
+            <p>
+              {selectedSubmissions.get(assignment_value.id).grader_feedback}
+            </p>
+          {/if}
+        </div>
       {:else}
         <p>No assignment selected</p>
       {/if}
@@ -169,21 +181,22 @@
     <div
       bind:this={editorElement}
       class="textarea textarea-bordered editor-container mb-4 rounded"
-      on:keydown={(e) => e.ctrlKey && e.key === 'Enter' && submitSolution()}
+      on:keydown={(e) => e.ctrlKey && e.key === "Enter" && submitSolution()}
     ></div>
     <!-- Buttons: -->
     <div class="card-actions justify-end">
-
-        <button class="btn btn-primary"
-              disabled={$submissionStore.some(submission => submission.status === 'pending')}
-              on:click={submitSolution} >
-            Submit solution
-            <kbd class="kbd">ctrl</kbd>
-            +
-            <kbd class="kbd">enter</kbd>
-
+      <button
+        class="btn btn-primary"
+        disabled={$submissionStore.some(
+          (submission) => submission.status === "pending"
+        )}
+        on:click={submitSolution}
+      >
+        Submit solution
+        <kbd class="kbd">ctrl</kbd>
+        +
+        <kbd class="kbd">enter</kbd>
       </button>
     </div>
-
   </div>
 </div>
