@@ -126,7 +126,7 @@
 <div class="card bg-base-100 shadow-xl">
   <div class="card-body">
     <!-- Assignment -->
-    <h2 class="card-title">{$selectedAssignment.title}</h2>
+    <h2 class="card-title justify-center rounded-sm text-2xl">::: {$selectedAssignment.title} :::</h2>
     <p class="handout">
       {$selectedAssignment.handout}
     </p>
@@ -147,9 +147,9 @@
         on:click={submitSolution}
       >
         Submit solution
-        <kbd class="kbd">ctrl</kbd>
-        +
-        <kbd class="kbd">enter</kbd>
+        <kbd class="kbd kbd-xs">ctrl</kbd>
+        <span class="text-xs">+</span>
+        <kbd class="kbd kbd-xs">enter</kbd>
       </button>
 
       {#if $resolvedAssignmentIds.includes($selectedAssignment.id)  }
