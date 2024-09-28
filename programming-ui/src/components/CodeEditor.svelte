@@ -3,10 +3,7 @@
   import { onMount, tick } from "svelte";
   import { basicEditor } from "prism-code-editor/setups";
   import { selectedAssignment } from "../stores/assignments.svelte";
-  import {
-    submitSolutionForGrading,
-    getSubmissionsByUser,
-  } from "../lib/http-actions/submissions-api.js";
+  import { submitSolutionForGrading} from "../lib/http-actions/submissions-api.js";
   import { submissionStore } from "../stores/submissions.store.js";
   import "prism-code-editor/prism/languages/markup";
   import "prism-code-editor/prism/languages/python";
@@ -14,6 +11,7 @@
 
   let editorElement;
   let submissionTimelineElement;
+
 
   let editor;
   let assignment_value;
@@ -26,7 +24,7 @@
     if (editor && submission.code) {
       insertText(editor, submission.code, 0, editor.value.length, 0, 0);
     }
-    selectedSubmissions.set(submission.programming_assignment_id, submission);
+    selectedSubmissions?.set(submission.programming_assignment_id, submission);
     selectedSubmissions = selectedSubmissions;
     console.log('Updated selectedSubmissions:', selectedSubmissions);
   };
@@ -35,7 +33,7 @@
     console.log('Selected assignment changed:', value);
     assignment_value = value;
     if (submissionStore.hasSubmissions(assignment_value.id)) {
-      const selectedSubmission = selectedSubmissions.get(assignment_value.id);
+      const selectedSubmission = selectedSubmissions?.get(assignment_value.id);
       if (selectedSubmission) {
         console.log('Loading selected submission:', selectedSubmission);
         loadSubmission(selectedSubmission);
@@ -99,10 +97,12 @@
 
   const submitSolution = async () => {
     if ( assignment_value ) {
+
       const result = await submitSolutionForGrading(
         assignment_value.id,
         editor.value
-      );
+      )
+
     }
   };
 
@@ -173,11 +173,15 @@
     ></div>
     <!-- Buttons: -->
     <div class="card-actions justify-end">
-      <button class="btn btn-primary" on:click={submitSolution} >
-        Submit solution
-        <kbd class="kbd">ctrl</kbd>
-        +
-        <kbd class="kbd">enter</kbd>
+
+        <button class="btn btn-primary"
+              disabled={$submissionStore.some(submission => submission.status === 'pending')}
+              on:click={submitSolution} >
+            Submit solution
+            <kbd class="kbd">ctrl</kbd>
+            +
+            <kbd class="kbd">enter</kbd>
+
       </button>
     </div>
 
