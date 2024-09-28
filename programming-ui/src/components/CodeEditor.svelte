@@ -1,6 +1,6 @@
 <script>
   import { userUuid } from "../stores/stores.js";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { basicEditor } from "prism-code-editor/setups";
   import { selectedAssignment } from "../stores/assignments.svelte";
   import {
@@ -13,6 +13,7 @@
   import { insertText } from "prism-code-editor/utils";
 
   let editorElement;
+  let submissionTimelineElement;
 
   let editor;
   let assignment_value;
@@ -63,7 +64,7 @@
     selectedSubmissions = new Map();
 
     submissions = [];
-    submissionStore.subscribe((value) => {
+    submissionStore.subscribe(async (value) => {
       console.log("SUBMISSIONS STORE UPDATED*****", value);
       submissions = value;
       // take the last submission in the submissions array,
@@ -72,6 +73,13 @@
       const lastSubmission = submissions[submissions.length - 1];
       if (lastSubmission) {
         loadSubmission(lastSubmission);
+        await tick();
+        if (submissionTimelineElement) {
+          submissionTimelineElement.scrollTo({
+            left: submissionTimelineElement.scrollWidth,
+            behavior: 'smooth'
+          });
+        }
       }
     });
 
@@ -114,7 +122,7 @@
     <!-- Start of submission timeline -->
     <div class="overflow-x-auto">
       {#if assignment_value && assignment_value.id}
-        <div class="flex overflow-x-auto whitespace-nowrap">
+        <div bind:this={submissionTimelineElement} class="flex overflow-x-auto whitespace-nowrap" style="scroll-behavior: smooth;">
           {#each submissionStore.getSubmissionsForAssignment(assignment_value.id) as submission (submission.id)}
             <div
               class={`badge gap-2 mr-2 ${
@@ -125,6 +133,7 @@
                     : 'badge-error'
               } ${selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).id === submission.id ? 'badge-primary' : 'badge-outline'}`}
               on:click={() => handleSubmissionClick(submission)}
+              on:keydown={(e) =>  e.key === 'Enter' && handleSubmissionClick(submission)}
               style="cursor: pointer; transition: background-color 0.3s;"
             >
               {#if submission.status === 'pending'}
@@ -137,12 +146,21 @@
             </div>
           {/each}
         </div>
-        {#if selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== 'pending'}
-          <div class="mt-4 p-4 bg-base-200 rounded-lg">
+          <div class="mt-4 p-4 bg-base-200 rounded-lg
+              ${
+                selectedSubmissions.get(assignment_value.id).status === 'pending'
+                  ? ' skeleton'
+                  : ''
+                }">
             <h3 class="text-lg font-semibold mb-2">Grader Feedback:</h3>
+
+        {#if selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== 'pending'}
             <p>{selectedSubmissions.get(assignment_value.id).grader_feedback}</p>
-          </div>
+
+
         {/if}
+
+            </div>
       {:else}
         <p>No assignment selected</p>
       {/if}
