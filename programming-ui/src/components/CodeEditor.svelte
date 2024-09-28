@@ -4,7 +4,7 @@
   import { basicEditor } from "prism-code-editor/setups";
   import { selectedAssignment } from "../stores/assignments.svelte";
   import { submitSolutionForGrading } from "../lib/http-actions/submissions-api.js";
-  import { submissionStore } from "../stores/submissions.store.js";
+  import { submissionStore, resolvedAssignmentIds } from "../stores/submissions.store.js";
   import "prism-code-editor/prism/languages/markup";
   import "prism-code-editor/prism/languages/python";
   import { insertText } from "prism-code-editor/utils";
@@ -104,6 +104,7 @@
   });
 
   const submitSolution = async () => {
+
     if ($submissionStore.some(
       (submission) => submission.status === "pending"
     )) return;
@@ -148,8 +149,16 @@
         +
         <kbd class="kbd">enter</kbd>
       </button>
+
+      {#if $resolvedAssignmentIds.includes($selectedAssignment.id)  }
+          <button>Next</button>
+      {/if}
+
+
     </div>
     <!-- End of buttons -->
+
+
     <!-- Start of submission timeline -->
     <div class="overflow-x-auto">
       {#if assignment_value && assignment_value.id}
