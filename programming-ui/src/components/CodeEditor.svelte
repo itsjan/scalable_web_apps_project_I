@@ -55,11 +55,9 @@
       if (editor) {
         insertText(
           editor,
-          "",
-          0,
-          editor.value.length,
-          0,
-          0
+          "",0, editor.value.length, 0, 0
+
+
         );
       }
     }
