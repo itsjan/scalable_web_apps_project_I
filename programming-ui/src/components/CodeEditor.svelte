@@ -106,6 +106,9 @@
   });
 
   const submitSolution = async () => {
+    if (submissionStore.some(
+      (submission) => submission.status === "pending"
+    )) return;
     if (assignment_value) {
       const result = await submitSolutionForGrading(
         assignment_value.id,
@@ -159,9 +162,9 @@
         >
           {#each submissionStore.getSubmissionsForAssignment(assignment_value.id) as submission (submission.id)}
             <div
-              class={`badge gap-2 mr-2 ${
+              class={`badge badge-lg gap-2 mr-2 ${
                 submission.status === "pending"
-                  ? "badge-warning"
+                  ? "skeleton"
                   : submission.correct
                     ? "badge-success"
                     : "badge-error"
