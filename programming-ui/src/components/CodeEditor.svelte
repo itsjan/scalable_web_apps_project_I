@@ -64,12 +64,14 @@
 
     submissions = [];
     submissionStore.subscribe((value) => {
-      console.log("SUBMISSIONS STORE UPDATED", value);
+      console.log("SUBMISSIONS STORE UPDATED*****", value);
       submissions = value;
-      console.log('Current selectedSubmissions:', selectedSubmissions);
-      if (submissions.length === 1 && !selectedSubmissions.has(submissions[0].programming_assignment_id)) {
-        console.log('Loading single submission:', submissions[0]);
-        loadSubmission(submissions[0]);
+      // take the last submission in the submissions array,
+      // when the user clicks on the "submit solution" button
+      // this bring the new submission to the focus
+      const lastSubmission = submissions[submissions.length - 1];
+      if (lastSubmission) {
+        loadSubmission(lastSubmission);
       }
     });
 
@@ -89,21 +91,17 @@
 
   const submitSolution = async () => {
     if ( assignment_value ) {
-      console.log('Submitting solution for assignment:', assignment_value.id);
       const result = await submitSolutionForGrading(
         assignment_value.id,
         editor.value
       );
-      console.log('Submission result:', result);
     }
   };
 
   const handleSubmissionClick = (submission) => {
-    console.log('Submission clicked:', submission);
     loadSubmission(submission);
     selectedSubmissions.set(submission.programming_assignment_id, submission);
     selectedSubmissions = selectedSubmissions;
-    console.log('Updated selectedSubmissions after click:', selectedSubmissions);
   };
 
 </script>
@@ -119,7 +117,6 @@
         <div class="flex flex-wrap gap-2">
           {#each $submissionStore.filter(sub => sub.programming_assignment_id === assignment_value.id) as submission (submission.id)}
             <!-- Debug log to check filtered submissions -->
-
             <div
               class={`badge gap-2 ${
                 submission.status === 'pending'
