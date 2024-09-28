@@ -143,12 +143,17 @@
     <div
       bind:this={editorElement}
       class="textarea textarea-bordered editor-container mb-4 rounded"
+      on:keydown={(e) => e.ctrlKey && e.key === 'Enter' && submitSolution()}
     ></div>
     <!-- Buttons: -->
     <div class="card-actions justify-end">
-      <button class="btn btn-primary" on:click={submitSolution}>
+      <button class="btn btn-primary" on:click={submitSolution} >
         Submit solution
+        <kbd class="kbd">ctrl</kbd>
+        +
+        <kbd class="kbd">enter</kbd>
       </button>
     </div>
+
   </div>
 </div>
