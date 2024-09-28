@@ -130,14 +130,21 @@
                         on:click={() => handleSubmissionClick(submission)}
                         style="cursor: pointer; transition: background-color 0.3s;"
                       >
-                        {submission.status === 'pending' ? 'Pending' : submission.correct ? 'Pass' : 'Fail'}
+                      {#if submission.status === 'pending' }
+                          Pending
+                      {:else if submission.correct }
+                          Pass
+                      {:else}
+                          Fail
+                      {/if}
+
                       </div>
                       { submission.id }
                     </div>
                     <div class="collapse-content">
-                        {#if submission.status !== 'pending' }
+                    {#if submission.status !== 'pending' }
                       <p>Grader Feedback: {submission.grader_feedback }</p>
-                      {/if}
+                    {/if}
                     </div>
                   </div>
                 {/each}
