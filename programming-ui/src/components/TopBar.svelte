@@ -12,8 +12,11 @@
     </div>
     <div class="flex-none gap-2">
         {#if $userUuid}
-            <p>Hello, {$userUuid}</p>
-            <span class="badge badge-accent">{$pointsEarned}</span>
+
+            <div class="tooltip tooltip-left" data-tip="ooo{$userUuid}">
+
+                <span class="badge badge-lg badge-accent">XP{$pointsEarned}</span>
+            </div>
         {/if}
     </div>
 </div>
