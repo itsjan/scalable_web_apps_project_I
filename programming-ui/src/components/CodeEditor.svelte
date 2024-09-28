@@ -74,23 +74,30 @@
 
 <div class="card bg-base-100 shadow-xl">
   <div class="card-body">
+    <!-- Assignment -->
     <h2 class="card-title">{$selectedAssignment.title}</h2>
     <p>{$selectedAssignment.handout}</p>
-
-
     <!-- Start of submission timeline -->
     <div class="overflow-x-auto">
       {#if assignment_value && assignment_value.id}
-        <ul class="steps">
+        <div class="flex flex-wrap gap-2">
           {#each $submissionStore.filter(sub => sub.programming_assignment_id === assignment_value.id) as submission (submission.id)}
-            <li
-              data-content={submission.status === 'pending' ? '?' : submission.correct ? '✓' : '✕'}
-              class={`step ${submission.correct ? 'step-accent' : submission.status === 'pending' ? '' : 'step-error'}`}
+            <div
+              class={`badge gap-2 ${
+                submission.status === 'pending'
+                  ? 'badge-warning'
+                  : submission.correct
+                    ? 'badge-success'
+                    : 'badge-error'
+              }`}
               on:click={() => loadSubmission(submission)}
               style="cursor: pointer; transition: background-color 0.3s;"
-            ></li>
+            >
+
+              {submission.status === 'pending' ? 'Pending' : submission.correct ? 'Pass' : 'Fail'}
+            </div>
           {/each}
-        </ul>
+        </div>
       {:else}
         <p>No assignment selected</p>
       {/if}
@@ -100,15 +107,11 @@
       bind:this={editorElement}
       class="textarea textarea-bordered editor-container mb-4 rounded"
     ></div>
-
+    <!-- Buttons: -->
     <div class="card-actions justify-end">
-
-
       <button class="btn btn-primary" on:click={submitSolution}>
         Submit solution
       </button>
     </div>
   </div>
 </div>
-
-<button class="btn" on:click={() => console.log(editor.value)}>Log code</button>
