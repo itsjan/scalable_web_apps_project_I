@@ -55,7 +55,7 @@
       if (editor) {
         insertText(
           editor,
-          "\n\n",
+          "",
           0,
           editor.value.length,
           0,
@@ -126,6 +126,29 @@
     <!-- Assignment -->
     <h2 class="card-title">{$selectedAssignment.title}</h2>
     <p>{$selectedAssignment.handout}</p>
+    <!-- Editor -->
+    Please enter your solution here:
+    <div bind:this={editorElement}
+      class="textarea textarea-bordered editor-container mb-4 rounded"
+      on:keydown={(e) => e.ctrlKey && e.key === "Enter" && submitSolution()}
+    ></div>
+    <!-- End of editor -->
+    <!-- Buttons: -->
+    <div class="card-actions justify-end">
+      <button
+        class="btn btn-primary"
+        disabled={$submissionStore.some(
+          (submission) => submission.status === "pending"
+        )}
+        on:click={submitSolution}
+      >
+        Submit solution
+        <kbd class="kbd">ctrl</kbd>
+        +
+        <kbd class="kbd">enter</kbd>
+      </button>
+    </div>
+    <!-- End of buttons -->
     <!-- Start of submission timeline -->
     <div class="overflow-x-auto">
       {#if assignment_value && assignment_value.id}
@@ -160,14 +183,14 @@
         </div>
         <div
           class="mt-4 p-4 bg-base-200 rounded-lg
-              ${selectedSubmissions.get(assignment_value.id).status ===
+              ${selectedSubmissions?.get(assignment_value.id)?.status ===
           'pending'
             ? ' skeleton'
             : ''}"
         >
           <h3 class="text-lg font-semibold mb-2">Grader Feedback:</h3>
 
-          {#if selectedSubmissions.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== "pending"}
+          {#if selectedSubmissions?.get(assignment_value.id) && selectedSubmissions.get(assignment_value.id).status !== "pending"}
             <p>
               {selectedSubmissions.get(assignment_value.id).grader_feedback}
             </p>
@@ -178,25 +201,5 @@
       {/if}
     </div>
     <!-- End of submission timeline -->
-    <div
-      bind:this={editorElement}
-      class="textarea textarea-bordered editor-container mb-4 rounded"
-      on:keydown={(e) => e.ctrlKey && e.key === "Enter" && submitSolution()}
-    ></div>
-    <!-- Buttons: -->
-    <div class="card-actions justify-end">
-      <button
-        class="btn btn-primary"
-        disabled={$submissionStore.some(
-          (submission) => submission.status === "pending"
-        )}
-        on:click={submitSolution}
-      >
-        Submit solution
-        <kbd class="kbd">ctrl</kbd>
-        +
-        <kbd class="kbd">enter</kbd>
-      </button>
-    </div>
   </div>
 </div>
