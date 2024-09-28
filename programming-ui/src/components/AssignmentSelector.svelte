@@ -86,7 +86,7 @@
             <div
                 on:click={() => selectAssignment(assignment, index + 1)}
                 class="timeline-end timeline-box cursor-pointer"
-                class:bg-accent={$selectedAssignment === assignment}
+                class:bg-primary={$selectedAssignment === assignment}
                 class:disabled={index !== 0 && index > maxResolvedAssignmentId}
             >
                 {assignment.title}
@@ -96,21 +96,7 @@
     {/each}
 </ul>
 
-<!--  list of submissions for the selected assignment -->
-{#if selectedAssignment_value}
-    <h2>Submissions for {selectedAssignment_value.title}</h2>
-    {#if submissions.length > 0}
-        <ul>
-            {#each submissions as submission}
-                <li>
-                    {submission.code ? "Code submission" : "No code"} - {submission.status}
-                </li>
-            {/each}
-        </ul>
-    {:else}
-        <p>No submissions for this assignment yet.</p>
-    {/if}
-{/if}
+
 
 <style>
 
