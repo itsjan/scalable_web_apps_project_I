@@ -53,8 +53,9 @@ const getAllSubmissionsByUser = async (c) => {
   console.log("User UUID:", userUuid);
 
   try {
-    const allSubmissions =
-      await submissionService.getAllSubmissionsByUser(userUuid);
+    const allSubmissions = await submissionService.getAllSubmissionsByUser(
+      userUuid,
+    );
     console.log("All submissions retrieved:", allSubmissions);
 
     return c.json({ submissions: allSubmissions });
@@ -65,7 +66,7 @@ const getAllSubmissionsByUser = async (c) => {
 };
 
 export {
+  getAllSubmissionsByUser,
   getSubmissionsByUser,
   submitSolutionForGrading,
-  getAllSubmissionsByUser,
 };

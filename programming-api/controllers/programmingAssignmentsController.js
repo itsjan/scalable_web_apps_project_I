@@ -7,8 +7,8 @@ import {
 
 const getSessionId = async (c) => {
   const secret = "1234567890";
-  const sessionId =
-    (await getSignedCookie(c, secret, "sessionId")) ?? crypto.randomUUID();
+  const sessionId = (await getSignedCookie(c, secret, "sessionId")) ??
+    crypto.randomUUID();
 
   if (sessionId === undefined) {
     return crypto.randomUUID();
@@ -26,8 +26,9 @@ const getAssignmentsForUser = async (c) => {
     console.log({ ...c });
 
     console.log("Fetching assignments for user");
-    const assignments =
-      await programmingAssignmentService.findAllForUser(userId);
+    const assignments = await programmingAssignmentService.findAllForUser(
+      userId,
+    );
     console.log("Assignments fetched:", assignments);
 
     console.log("Fetching last completed assignment");
@@ -38,8 +39,8 @@ const getAssignmentsForUser = async (c) => {
     console.log("Last completed assignment:", lastOneCompleted);
 
     console.log("Fetching correct solutions");
-    const correctSolutions =
-      await programmingAssignmentService.correctSubmissionsByUser(userId);
+    const correctSolutions = await programmingAssignmentService
+      .correctSubmissionsByUser(userId);
     console.log("Correct solutions:", correctSolutions);
 
     console.log({ assignments, lastOneCompleted, correctSolutions });
@@ -61,4 +62,4 @@ const getAssignments = async (c) => {
   }
 };
 
-export { getAssignmentsForUser, getAssignments };
+export { getAssignments, getAssignmentsForUser };

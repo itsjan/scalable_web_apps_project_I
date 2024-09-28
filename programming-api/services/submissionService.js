@@ -1,25 +1,5 @@
 import { sql } from "../database/database.js";
 import { getRedisClient } from "../database/redis.js";
-/*
-CREATE TABLE programming_assignment_submissions (
-  id SERIAL PRIMARY KEY,
-  programming_assignment_id INTEGER REFERENCES programming_assignments(id),
-  code TEXT NOT NULL,
-  user_uuid TEXT NOT NULL,
-  status SUBMISSION_STATUS NOT NULL DEFAULT 'pending',
-  grader_feedback TEXT,
-  correct BOOLEAN DEFAULT FALSE,
-  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-
-  CREATE TABLE programming_assignments (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    assignment_order INTEGER NOT NULL,
-    handout TEXT NOT NULL,
-    test_code TEXT NOT NULL
-  );
-);
-*/
 const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
   let result;
 
@@ -47,11 +27,13 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
     if (existingSubmission.length > 0) {
       result = await sql`
         INSERT INTO programming_assignment_submissions (programming_assignment_id, code, user_uuid, status, grader_feedback, correct)
-        VALUES (${assignmentId}, ${code}, ${userUuid}, ${existingSubmission[0].status}, ${existingSubmission[0].grader_feedback}, ${existingSubmission[0].correct})
+        VALUES (${assignmentId}, ${code}, ${userUuid}, ${
+        existingSubmission[0].status
+      }, ${existingSubmission[0].grader_feedback}, ${
+        existingSubmission[0].correct
+      })
         RETURNING *
       `;
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // TODO: Update the submission in the database
     } else {
       console.log("No existing submission found. Inserting new submission.");
       console.log("DEBUG: Inserting new submission with values:", {
@@ -107,19 +89,6 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
   }
 };
 
-/*
-CREATE TABLE programming_assignment_submissions (
-  id SERIAL PRIMARY KEY,
-  programming_assignment_id INTEGER REFERENCES programming_assignments(id),
-  code TEXT NOT NULL,
-  user_uuid TEXT NOT NULL,
-  status SUBMISSION_STATUS NOT NULL DEFAULT 'pending',
-  grader_feedback TEXT,
-  correct BOOLEAN DEFAULT FALSE,
-  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-  CREATE TYPE SUBMISSION_STATUS AS ENUM ('pending', 'processed');
-  */
-
 const updateGraderFeedback = async (
   userUuid,
   submissionId,
@@ -152,35 +121,6 @@ const updateGraderFeedback = async (
   }
 };
 
-const correctSubmission = async (userUuid, assignmentId, submissionId) => {
-  return await sql`
-    UPDATE programming_assignment_submissions
-    SET correct = TRUE
-    WHERE id = ${submissionId}
-      AND user_uuid = ${userUuid}
-      AND programming_assignment_id = ${assignmentId}
-  `;
-};
-
-const correctSubmissionsByUser = async (userUuid) => {
-  return await sql`
-    SELECT id
-    FROM programming_assignment_submissions
-    WHERE user_uuid = ${userUuid} AND correct = true
-    ORDER BY programming_assignment_id
-  `;
-};
-
-const submissionsByUser = async (assignmentId, userUuid) => {
-  return await sql`
-      SELECT id, code, status, grader_feedback, correct
-      FROM programming_assignment_submissions
-      WHERE programming_assignment_id = ${assignmentId}
-      AND user_uuid = ${userUuid}
-      ORDER BY programming_assignment_id
-    `;
-};
-
 const getAllSubmissionsByUser = async (userUuid) => {
   console.log("Starting getAllSubmissionsByUser function");
   console.log("User UUID:", userUuid);
@@ -201,10 +141,7 @@ const getAllSubmissionsByUser = async (userUuid) => {
 };
 
 export {
-  submissionsByUser,
-  submitSolutionForGrading,
-  correctSubmission,
-  correctSubmissionsByUser,
   getAllSubmissionsByUser,
+  submitSolutionForGrading,
   updateGraderFeedback,
 };
