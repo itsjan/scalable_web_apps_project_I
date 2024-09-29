@@ -90,16 +90,16 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
 };
 
 const updateGraderFeedback = async (
-  userUuid,
-  submissionId,
-  graderFeedback,
+  {user_uuid,
+    id,
+  grader_feedback,
   correct,
-  status = "processed",
+  status = "processed"},
 ) => {
   console.log("Updating grader feedback with parameters:", {
-    userUuid,
-    submissionId,
-    graderFeedback,
+    user_uuid,
+    id,
+    grader_feedback,
     correct,
     status,
   });
@@ -107,9 +107,9 @@ const updateGraderFeedback = async (
   try {
     const result = await sql`
         UPDATE programming_assignment_submissions
-        SET status = ${status}, grader_feedback = ${graderFeedback}, correct = ${correct}
-        WHERE id = ${submissionId}
-          AND user_uuid = ${userUuid}
+        SET status = ${status}, grader_feedback = ${grader_feedback}, correct = ${correct}
+        WHERE id = ${id}
+          AND user_uuid = ${user_uuid}
         RETURNING *
       `;
 
