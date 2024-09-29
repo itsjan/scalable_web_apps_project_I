@@ -4,7 +4,7 @@ import { userUuid } from "../../stores/stores.js";
 import { get } from "svelte/store";
 
 /* Submissions */
-const submitSolutionForGrading = async (assignmentId, code) => {
+export const submitSolutionForGrading = async (assignmentId, code) => {
   try {
     const response = await fetch(
       `/api/user/${get(userUuid)}/submissions/${assignmentId}`,
@@ -14,13 +14,10 @@ const submitSolutionForGrading = async (assignmentId, code) => {
         body: JSON.stringify({ code }),
       }
     );
-    console.log("Submission response:", response);
 
     const result = await response.json();
-    console.log("Submission result:", result);
 
     if (response.ok) {
-      //console.log("Submission ID:", result.data.id);
       return {
         status: "ok",
         submission_id: result.id || "?",
@@ -45,7 +42,7 @@ const submitSolutionForGrading = async (assignmentId, code) => {
   }
 };
 
-const getAllSubmissionsByUser = async (userUuid) => {
+export const getAllSubmissionsByUser = async (userUuid) => {
   try {
     const response = await fetch(`/api/user/${userUuid}/submissions`);
     const allSubmissions = await response.json();
@@ -58,7 +55,7 @@ const getAllSubmissionsByUser = async (userUuid) => {
 };
 
 
-const correctSubmissionsByUser = async (userUuid) => {
+export const correctSubmissionsByUser = async (userUuid) => {
   return await sql`
       SELECT id
       FROM programming_assignment_submissions
@@ -67,8 +64,3 @@ const correctSubmissionsByUser = async (userUuid) => {
     `;
 };
 
-export {
-  correctSubmissionsByUser,
-  getAllSubmissionsByUser,
-  submitSolutionForGrading,
-};

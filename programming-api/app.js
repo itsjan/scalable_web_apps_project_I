@@ -2,8 +2,12 @@
 
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/deno";
-import { getAllSubmissionsByUser, submitSolutionForGrading, updateGraderFeedback } from "./services/submissionService.js";
-import {findAll as findAllAssignments} from "./services/programmingAssignmentService.js";
+import {
+  getAllSubmissionsByUser,
+  submitSolutionForGrading,
+  updateGraderFeedback,
+} from "./services/submissionService.js";
+import { findAll as findAllAssignments } from "./services/programmingAssignmentService.js";
 
 import { getRedisClient } from "./database/redis.js";
 
@@ -56,7 +60,6 @@ app.get("/api/assignments", async (c) => {
  * Endpoint for the programming-ui client to submit solutons for grading
  */
 app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
-
   const userUuid = c.req.param("userUuid");
   const ws = clients.get(userUuid);
   const assignmentId = c.req.param("assignmentId");
@@ -69,14 +72,20 @@ app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
       assignmentId,
       code,
     );
-    
-    ws.send(JSON.stringify({ type: "submission_update", submission: result }));
+
+    if (ws) {
+      ws.send(JSON.stringify({ type: "submission_update", submission: result }));
+    } else {
+      console.log(
+        `No WebSocket connection found for user: ${userUuid}`,
+      );
+    }
 
     return c.json({ ...result, ok: true }, 200);
   } catch (error) {
-    return c.json({ message: "Internal Server Error", error }, 500);
+    console.error("Error in submitSolutionForGrading:", error);
+    return c.json({ message: "Internal Server Error", ok: false }, 500);
   }
-
 });
 
 /**
@@ -104,7 +113,7 @@ app.get(
       console.error("Error in getSubmissionsByUser:", error);
       return c.json({ message: "Internal Server Error", ok: false }, 500);
     }
-  }
+  },
 );
 
 /**
@@ -113,7 +122,6 @@ app.get(
 app.get("/api/user/:userUuid/submissions", async (c) => {
   console.log("Starting getAllSubmissionsByUser function");
   const userUuid = c.req.param("userUuid");
-
 
   try {
     const allSubmissions = await getAllSubmissionsByUser(
@@ -143,7 +151,7 @@ async function pollResults() {
           const result = JSON.parse(message);
 
           // - updates the DB
-          await updateGraderFeedback(result)
+          await updateGraderFeedback(result);
           // - sends an update to the client
           const ws = clients.get(result.user_uuid);
           if (ws) {
@@ -154,7 +162,9 @@ async function pollResults() {
               }),
             );
           } else {
-            console.log("WebSocket not found for user:", result.user_uuid);
+            console.log(
+              `No WebSocket connection found for user: ${result.user_uuid}`,
+            );
           }
         } else {
           //console.log("No message received from Redis queue");
