@@ -15,7 +15,7 @@
 
             <div class="tooltip tooltip-left" data-tip="ooo{$userUuid}">
 
-                <span class="badge badge-lg badge-accent silkscreen-bold">XP : {$pointsEarned}</span>
+                <span class="badge badge-lg badge-accent silkscreen-bold">XP{$pointsEarned}</span>
             </div>
         {/if}
     </div>
