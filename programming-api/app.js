@@ -7,7 +7,12 @@ import {
   submitSolutionForGrading,
   updateGraderFeedback,
 } from "./services/submissionService.js";
-import { findAll as findAllAssignments } from "./services/programmingAssignmentService.js";
+import * as assignmentsService from "./services/programmingAssignmentService.js";
+import { cacheMethodCalls } from "./util/cacheUtil.js";
+const cachedAssignmentsService = cacheMethodCalls(assignmentsService, [
+  "insert",
+]);
+
 
 import { getRedisClient } from "./database/redis.js";
 
@@ -48,7 +53,7 @@ app.get(
  */
 app.get("/api/assignments", async (c) => {
   try {
-    const assignments = await findAllAssignments();
+    const assignments = await cachedAssignmentsService.findAll();
     return c.json(assignments);
   } catch (error) {
     console.error("Error in getAssignments:", error);
@@ -57,7 +62,24 @@ app.get("/api/assignments", async (c) => {
 });
 
 /**
- * Endpoint for the programming-ui client to submit solutons for grading
+ * Creates a new assignment
+ * ( invalidates cache )
+ */
+app.post("/api/assignments", async (c) => {
+
+  // todo: validata parameters ...
+  const body = await c.req.json();
+  try {
+    const assignment = await cachedAssignmentsService.insert(body);
+    return c.json(assignment);
+  } catch (error) {
+    console.error("Error in insert:", error);
+    return c.json({ message: "Internal Server Error", ok: false }, 500);
+  }
+})
+
+/**
+ * Endpoint for the programming-ui client to submit solutions for grading
  */
 app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
   const userUuid = c.req.param("userUuid");
