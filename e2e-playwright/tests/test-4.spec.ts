@@ -17,12 +17,8 @@ test('verify that the points shown to the user change when the user solves a pro
   await page.getByRole('button', { name: 'Submit solution ctrl + enter' }).click();
   await page.getByRole('textbox').fill('# Your code goes here');
   await expect(page.locator('body')).toContainText('XP : 100');
-  await page.getByRole('textbox').click({
-    clickCount: 3
-  });
-  await page.getByRole('textbox').fill('def hello():\n  return "Hello world!"');
-  await page.getByRole('button', { name: 'Submit solution ctrl + enter' }).click();
-  await page.getByRole('textbox').fill('def hello():\n  return "Hello world!"');
+    await page.getByRole('textbox').fill('def hello():\n  return "Hello world!"');
   await page.getByRole('button', { name: 'Submit solution ctrl + enter' }).click();
   await expect(page.locator('body')).toContainText('XP : 200');
+
 });

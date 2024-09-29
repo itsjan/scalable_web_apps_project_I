@@ -12,8 +12,6 @@ import { cacheMethodCalls } from "./util/cacheUtil.js";
 const cachedAssignmentsService = cacheMethodCalls(assignmentsService, [
   "insert",
 ]);
-
-
 import { getRedisClient } from "./database/redis.js";
 
 const app = new Hono();
@@ -95,6 +93,10 @@ app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
       code,
     );
 
+    // we have a queue of submissions. Push to Redis
+    const redisClient = await getRedisClient();
+    await redisClient.lpush("submissions", JSON.stringify(result));
+
     if (ws) {
       ws.send(JSON.stringify({ type: "submission_update", submission: result }));
     } else {
@@ -167,31 +169,30 @@ async function pollResults() {
   while (true) {
     try {
       // Pop a message from the right end of the 'results' list
-      client.rpop("results").then(async (message) => {
-        if (message !== null) {
-          console.log("Received result:", message);
-          const result = JSON.parse(message);
+      const message = await client.rpop("results");
+      if (message !== null) {
+        console.log("Received result:", message);
+        const result = JSON.parse(message);
 
-          // - updates the DB
-          await updateGraderFeedback(result);
-          // - sends an update to the client
-          const ws = clients.get(result.user_uuid);
-          if (ws) {
-            ws.send(
-              JSON.stringify({
-                type: "submission_update",
-                submission: result,
-              }),
-            );
-          } else {
-            console.log(
-              `No WebSocket connection found for user: ${result.user_uuid}`,
-            );
-          }
+        // - updates the DB
+        await updateGraderFeedback(result);
+        // - sends an update to the client
+        const ws = clients.get(result.user_uuid);
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(
+            JSON.stringify({
+              type: "submission_update",
+              submission: result,
+            }),
+          );
         } else {
-          //console.log("No message received from Redis queue");
+          console.log(
+            `No WebSocket connection found for user: ${result.user_uuid}`,
+          );
         }
-      });
+      } else {
+        //console.log("No message received from Redis queue");
+      }
     } catch (error) {
       console.error("Error polling results:", error);
       console.error("Stack trace:", error.stack);
