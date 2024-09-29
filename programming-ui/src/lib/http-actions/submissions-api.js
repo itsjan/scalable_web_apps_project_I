@@ -57,19 +57,6 @@ const getAllSubmissionsByUser = async (userUuid) => {
   }
 };
 
-// const getSubmissionsByUser = async (userUuid, assignmentId) => {
-//   try {
-//     const response = await fetch(
-//       `/api/user/${userUuid}/submissions/${assignmentId}`
-//     );
-//     const submissions = await response.json();
-//     console.log("Received submissions:", submissions);
-//     return submissions;
-//   } catch (error) {
-//     console.error("Error fetching submissions:", error);
-//     return [];
-//   }
-// };
 
 const correctSubmissionsByUser = async (userUuid) => {
   return await sql`
@@ -83,6 +70,5 @@ const correctSubmissionsByUser = async (userUuid) => {
 export {
   correctSubmissionsByUser,
   getAllSubmissionsByUser,
-  //getSubmissionsByUser,
   submitSolutionForGrading,
 };

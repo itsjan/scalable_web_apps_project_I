@@ -2,14 +2,14 @@ import { sql } from "../database/database.js";
 import { getRedisClient } from "../database/redis.js";
 
 
-/*
-// Submits a solution for grading.
-// When a programming assignment is submitted, the submission is stored into the database table 
-// programming_assignment_submissions. Upon submission, submissions with the same code to the 
-// same assignment are looked for from the database table. If a matching entry is found, 
-// the values for submission_status, grader_feedback, and correct are copied from the matching 
-// submission, and the code is not sent for grading. Otherwise, the submission is sent for grading. 
-*/
+/**
+ * Submits a solution for grading.
+ * When a programming assignment is submitted, the submission is stored into the database table 
+ * programming_assignment_submissions. Upon submission, submissions with the same code to the 
+ * same assignment are looked for from the database table. If a matching entry is found, 
+ * the values for submission_status, grader_feedback, and correct are copied from the matching 
+ * submission, and the code is not sent for grading. Otherwise, the submission is sent for grading. 
+ */
 const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
   let result;
   try {
@@ -86,9 +86,9 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
   }
 };
 
-/*
-// Updates the grader feedback in the database
-*/
+/**
+ * Updates the grader feedback in the database
+ */
 const updateGraderFeedback = async ({ user_uuid, id, grader_feedback, correct, status = "processed" }) => {
 
   try {
@@ -106,9 +106,9 @@ const updateGraderFeedback = async ({ user_uuid, id, grader_feedback, correct, s
   }
 };
 
-/*
-// Gets all submissions by user
-*/
+/**
+ * Gets all submissions by user
+ */
 const getAllSubmissionsByUser = async (userUuid) => {
 
   try {
@@ -131,3 +131,4 @@ export {
   submitSolutionForGrading,
   updateGraderFeedback,
 };
+

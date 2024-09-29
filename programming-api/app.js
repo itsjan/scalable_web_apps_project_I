@@ -2,8 +2,7 @@
 
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/deno";
-import * as submissionService from "./services/submissionService.js";
-import { updateGraderFeedback } from "./services/submissionService.js";
+import { getAllSubmissionsByUser, submitSolutionForGrading, updateGraderFeedback } from "./services/submissionService.js";
 import {findAll as findAllAssignments} from "./services/programmingAssignmentService.js";
 
 import { getRedisClient } from "./database/redis.js";
@@ -13,11 +12,10 @@ const clients = new Map();
 
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 
-
-/*
-// Creates a Web Socket for communication with the programming-ui clients
-// Currently only used to send updates to grading requests
-*/
+/**
+ * Creates a Web Socket for communication with the programming-ui clients
+ * Currently only used to send updates to grading requests
+ */
 app.get(
   "/ws/user/:userUuid",
   upgradeWebSocket((c) => {
@@ -40,10 +38,10 @@ app.get(
   }),
 );
 
-/*
-// Returns all programming assignments
-// Candidate for caching
-*/
+/**
+ * Returns all programming assignments
+ * Candidate for caching
+ */
 app.get("/api/assignments", async (c) => {
   try {
     const assignments = await findAllAssignments();
@@ -54,10 +52,9 @@ app.get("/api/assignments", async (c) => {
   }
 });
 
-
-/*
-// Endpoint for the programming-ui client to submit solutons for grading
-*/
+/**
+ * Endpoint for the programming-ui client to submit solutons for grading
+ */
 app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
 
   const userUuid = c.req.param("userUuid");
@@ -67,13 +64,12 @@ app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
   const code = body.code;
 
   try {
-    const result = await submissionService.submitSolutionForGrading(
+    const result = await submitSolutionForGrading(
       userUuid,
       assignmentId,
       code,
     );
-    console.log("Submission result:", result);
-
+    
     ws.send(JSON.stringify({ type: "submission_update", submission: result }));
 
     return c.json({ ...result, ok: true }, 200);
@@ -81,12 +77,11 @@ app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
     return c.json({ message: "Internal Server Error", error }, 500);
   }
 
-  //return submissions.submitSolutionForGrading(c, ws);
 });
 
-/*
-// Endpoint for the programming-ui client to get submissions by user
-*/
+/**
+ * Endpoint for the programming-ui client to get submissions by user
+ */
 app.get(
   "/api/user/:userUuid/submissions/:assignmentId",
   async (c) => {
@@ -98,7 +93,7 @@ app.get(
     console.log("User UUID:", userUuid);
 
     try {
-      const submissions = await submissionService.submissionsByUser(
+      const submissions = await submissionsByUser(
         assignmentId,
         userUuid,
       );
@@ -112,20 +107,18 @@ app.get(
   }
 );
 
-/*
-// Endpoint for the programming-ui client to get all submissions by user
-*/
+/**
+ * Endpoint for the programming-ui client to get all submissions by user
+ */
 app.get("/api/user/:userUuid/submissions", async (c) => {
   console.log("Starting getAllSubmissionsByUser function");
   const userUuid = c.req.param("userUuid");
 
-  console.log("User UUID:", userUuid);
 
   try {
-    const allSubmissions = await submissionService.getAllSubmissionsByUser(
+    const allSubmissions = await getAllSubmissionsByUser(
       userUuid,
     );
-    console.log("All submissions retrieved:", allSubmissions);
 
     return c.json({ submissions: allSubmissions });
   } catch (error) {
@@ -134,10 +127,10 @@ app.get("/api/user/:userUuid/submissions", async (c) => {
   }
 });
 
-/*
-// Polls grading results from the Redis queue
-// Also sends updates to the clients
-*/
+/**
+ * Polls grading results from the Redis queue
+ * Also sends updates to the clients
+ */
 async function pollResults() {
   const client = await getRedisClient();
 
@@ -181,3 +174,4 @@ async function pollResults() {
 pollResults();
 
 export default app;
+
