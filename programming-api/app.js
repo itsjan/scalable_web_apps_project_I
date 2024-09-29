@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/deno";
 import * as assignments from "./controllers/programmingAssignmentsController.js";
 import * as submissions from "./controllers/submissionsController.js";
+import * as submissionService from "./services/submissionService.js";
 import { updateGraderFeedback } from "./services/submissionService.js";
 import { getRedisClient } from "./database/redis.js";
 
@@ -49,10 +50,30 @@ app.get("/api/assignments", assignments.getAssignments);
 /*
 // Endpoint for the programming-ui client to submit solutons for grading
 */
-app.post("/api/user/:userUuid/submissions/:assignmentId", (c) => {
-  console.log("Starting post submissions function");
-  const ws = clients.get(c.req.param("userUuid"));
-  return submissions.submitSolutionForGrading(c, ws);
+app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
+  
+  const userUuid = c.req.param("userUuid");
+  const ws = clients.get(userUuid);
+  const assignmentId = c.req.param("assignmentId");
+  const body = await c.req.json();
+  const code = body.code;
+
+  try {
+    const result = await submissionService.submitSolutionForGrading(
+      userUuid,
+      assignmentId,
+      code,
+    );
+    console.log("Submission result:", result);
+
+    ws.send(JSON.stringify({ type: "submission_update", submission: result }));
+
+    return c.json({ ...result, ok: true }, 200);
+  } catch (error) {
+    return c.json({ message: "Internal Server Error", error }, 500);
+  }
+
+  //return submissions.submitSolutionForGrading(c, ws);
 });
 
 /*
@@ -85,13 +106,6 @@ async function pollResults() {
 
           // - updates the DB
           await updateGraderFeedback(result)
-          //   result.user_uuid,
-          //   result.id,
-          //   result.grader_feedback,
-          //   result.correct,
-          //   result.status,
-          // );
-
           // - sends an update to the client
           const ws = clients.get(result.user_uuid);
           if (ws) {
