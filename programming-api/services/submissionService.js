@@ -74,7 +74,6 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
       // Unique constraint violation
       return {
         status: "error",
-        code: "SUB-1",
         sqlCode: error.code,
         message:
           "You already have a pending submission. Please wait for it to be graded before submitting another.",

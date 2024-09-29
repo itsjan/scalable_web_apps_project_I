@@ -4,7 +4,7 @@ import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/deno";
 import * as submissionService from "./services/submissionService.js";
 import { updateGraderFeedback } from "./services/submissionService.js";
-import * as programmingAssignmentService from "./services/programmingAssignmentService.js";
+import {findAll as findAllAssignments} from "./services/programmingAssignmentService.js";
 
 import { getRedisClient } from "./database/redis.js";
 
@@ -46,7 +46,7 @@ app.get(
 */
 app.get("/api/assignments", async (c) => {
   try {
-    const assignments = await programmingAssignmentService.findAll();
+    const assignments = await findAllAssignments();
     return c.json(assignments);
   } catch (error) {
     console.error("Error in getAssignments:", error);
