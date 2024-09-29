@@ -5,6 +5,8 @@ import { upgradeWebSocket } from "hono/deno";
 import * as assignments from "./controllers/programmingAssignmentsController.js";
 import * as submissionService from "./services/submissionService.js";
 import { updateGraderFeedback } from "./services/submissionService.js";
+import * as programmingAssignmentService from "./services/programmingAssignmentService.js";
+
 import { getRedisClient } from "./database/redis.js";
 
 const app = new Hono();
@@ -43,7 +45,15 @@ app.get(
 // Returns all programming assignments
 // Candidate for caching
 */
-app.get("/api/assignments", assignments.getAssignments);
+app.get("/api/assignments", async (c) => {
+  try {
+    const assignments = await programmingAssignmentService.findAll();
+    return c.json(assignments);
+  } catch (error) {
+    console.error("Error in getAssignments:", error);
+    return c.json({ message: "Internal Server Error", ok: false }, 500);
+  }
+});
 
 
 /*
