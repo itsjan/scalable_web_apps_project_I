@@ -1,3 +1,6 @@
+// Just a test to see if redis works
+// Redis is used to communicate between the grader-api and the programming-api
+
 import { connect } from "https://deno.land/x/redis/mod.ts";
 
 const client = await connect({ hostname: "localhost", port: 6379 });
