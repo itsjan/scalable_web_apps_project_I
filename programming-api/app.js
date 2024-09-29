@@ -1,9 +1,8 @@
 // app.js
-//import { Hono } from "https://deno.land/x/hono@v4.3.11/mod.ts";
+
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/deno";
 import * as assignments from "./controllers/programmingAssignmentsController.js";
-//import * as submissions from "./controllers/submissionsController.js";
 import * as submissionService from "./services/submissionService.js";
 import { updateGraderFeedback } from "./services/submissionService.js";
 import { getRedisClient } from "./database/redis.js";
