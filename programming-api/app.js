@@ -2,7 +2,6 @@
 
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/deno";
-import * as assignments from "./controllers/programmingAssignmentsController.js";
 import * as submissionService from "./services/submissionService.js";
 import { updateGraderFeedback } from "./services/submissionService.js";
 import * as programmingAssignmentService from "./services/programmingAssignmentService.js";
