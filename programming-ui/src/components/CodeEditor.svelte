@@ -153,10 +153,6 @@
         <kbd class="kbd kbd-xs">enter</kbd>
       </button>
 
-      {#if $resolvedAssignmentIds.includes($selectedAssignment.id)  }
-          <button>Next</button>
-      {/if}
-
 
     </div>
     <!-- End of buttons -->

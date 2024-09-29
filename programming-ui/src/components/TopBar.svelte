@@ -6,7 +6,7 @@
 
 </script>
 
-<div class="navbar bg-black text-primary-content">
+<div class="navbar bg-black text-primary-content  px-10 mx-auto max-w-7xl">
     <div class="flex-1">
         <p class="topbarlogo text-2xl">Programming Assignments</p>
     </div>
