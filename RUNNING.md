@@ -17,7 +17,7 @@ The application will be available at http://localhost:7800
 # Playwright tests
 
 ```
-docker compose run --rm --entrypoint=npx e2e-playwright playwright test
+docker compose run --entrypoint=npx e2e-playwright playwright test && docker rm $(docker ps -a -q --filter name=e2e-playwright)
 ```
 Three tests required for passing the course project are run:
 

@@ -45,6 +45,7 @@ services:
       - database
       - flyway
       - redis
+      - grader-api
     env_file:
       - project.env
 

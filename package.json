@@ -1,0 +1,14 @@
+{
+  "name": "project_i_sep19",
+  "version": "1.0.0",
+  "description": "Provides an endpoint for grading programming assignments. Has the functionality needed to create a grader image based on `grader-image` and to copy source code and test code to the image.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.47.2",
+    "@types/node": "^22.7.4"
+  }
+}
