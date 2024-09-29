@@ -1,4 +1,17 @@
-TODO: The RUNNING.md briefly outlines steps needed to run the application.
+# Running the project
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+
+## Running the project
+
+```
+docker compose up
+```
+
+The application will be available at http://localhost:7800
 
 
 # Playwright tests
