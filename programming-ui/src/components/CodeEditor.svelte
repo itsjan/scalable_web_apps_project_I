@@ -55,7 +55,7 @@
       if (editor) {
         insertText(
           editor,
-          "",0, editor.value.length, 0, 0
+          "# Your code goes here",0, editor.value.length, 0, 0
 
 
         );
@@ -132,7 +132,7 @@
     </p>
     <!-- Editor -->
 
-        <div bind:this={editorElement}
+        <div name="code-editor" bind:this={editorElement}
         class="editor-container mb-4 text-xl"
         on:keydown={(e) => e.ctrlKey && e.key === "Enter" && submitSolution()}
         ></div>
@@ -141,6 +141,7 @@
     <div class="card-actions place-content-center">
       <button
         class="btn btn-primary"
+        name="submit-solution"
         disabled={$submissionStore.some(
           (submission) => submission.status === "pending"
         )}
@@ -151,10 +152,6 @@
         <span class="text-xs">+</span>
         <kbd class="kbd kbd-xs">enter</kbd>
       </button>
-
-      {#if $resolvedAssignmentIds.includes($selectedAssignment.id)  }
-          <button>Next</button>
-      {/if}
 
 
     </div>

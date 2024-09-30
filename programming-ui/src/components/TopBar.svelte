@@ -6,7 +6,7 @@
 
 </script>
 
-<div class="navbar bg-black text-primary-content">
+<div class="navbar bg-black text-primary-content  px-10 mx-auto max-w-7xl">
     <div class="flex-1">
         <p class="topbarlogo text-2xl">Programming Assignments</p>
     </div>
@@ -15,7 +15,7 @@
 
             <div class="tooltip tooltip-left" data-tip="ooo{$userUuid}">
 
-                <span class="badge badge-lg badge-accent silkscreen-bold">XP : {$pointsEarned}</span>
+                <span class="badge badge-lg badge-accent silkscreen-bold">XP{$pointsEarned}</span>
             </div>
         {/if}
     </div>

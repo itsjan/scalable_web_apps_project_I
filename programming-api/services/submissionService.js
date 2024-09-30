@@ -1,5 +1,5 @@
 import { sql } from "../database/database.js";
-import { getRedisClient } from "../database/redis.js";
+
 
 
 /**
@@ -59,9 +59,7 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
           WHERE pas.id = ${submissionId}
         `;
 
-      // we have a queue of submissions. Push to Redis
-      const redisClient = await getRedisClient();
-      await redisClient.lpush("submissions", JSON.stringify(result[0]));
+
     } // end of else *new submisson* 
 
     return { submissionStatus: "ok", ...result[0] };
