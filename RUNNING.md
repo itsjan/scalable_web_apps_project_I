@@ -14,7 +14,7 @@ docker compose up
 The application will be available at http://localhost:7800
 
 
-# Playwright tests
+## Playwright tests
 
 ```
 docker compose run --entrypoint=npx e2e-playwright playwright test && docker rm $(docker ps -a -q --filter name=e2e-playwright)

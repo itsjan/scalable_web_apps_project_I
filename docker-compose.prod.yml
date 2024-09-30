@@ -50,9 +50,11 @@ services:
       - project.env
 
   programming-ui:
-    build: programming-ui
-    image: programming-ui
-    restart: "no"
+    build: 
+      context: programming-ui
+      dockerfile: Dockerfile.prod
+    image: programming-ui-prod
+    restart: "on-failure"
     volumes:
       - ./programming-ui/:/app
       - astro_node_modules:/app/node_modules
