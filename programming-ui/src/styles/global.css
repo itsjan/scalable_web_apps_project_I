@@ -55,9 +55,11 @@ button {
 }
 
 .topbarlogo {
-  font-family: "Nabla", system-ui;
+  font-family: "Handjet", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 400;
+  font-weight: 600;
   font-style: normal;
-  font-variation-settings: "EDPT" 111, "EHLT" 14;
+  font-variation-settings:
+    "ELGR" 1,
+    "ELSH" 2;
 }

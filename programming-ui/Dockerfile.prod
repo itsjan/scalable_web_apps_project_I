@@ -15,8 +15,9 @@ COPY . .
 # Build the Astro project for production
 # This will create a /dist directory with the built files
 # the node entry point will be /dist/server/entry.mjs
-RUN astro build
+RUN astro build --outDir ./dist
 
 # Serve the built files using Node.js
 
 CMD [ "node", "./dist/server/entry.mjs" ]
+
