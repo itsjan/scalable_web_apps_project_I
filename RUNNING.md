@@ -1,5 +1,8 @@
 # Running the project
 
+![alt text](app-screenshot.png)
+
+
 ## Prerequisites
 
 - Docker

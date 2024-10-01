@@ -6,7 +6,7 @@ This repository contains a submission Aalto University FITECH 101 course [Design
 - For self reflection, see [REFLECTION.md](REFLECTION.md).
 
 
-![alt text](image.png)
+![alt text](app-screenshot.png)
 
 
 
