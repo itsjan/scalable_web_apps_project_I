@@ -20,7 +20,6 @@
     // Subscribe to submissionStore and resolvedAssignmentIds
     $: {
         localSubmissions = $submissionStore;
-        console.log("Submission store updated:", localSubmissions);
         maxResolvedAssignmentId = Math.max(0, ...$resolvedAssignmentIds);
     }
 

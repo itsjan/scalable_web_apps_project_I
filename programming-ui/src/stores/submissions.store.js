@@ -1,7 +1,7 @@
 // submission-store.js
 import { writable, derived } from "svelte/store";
 import {
-  correctSubmissionsByUser,
+  
   getAllSubmissionsByUser,
   submitSolutionForGrading,
 } from "../lib/http-actions/submissions-api.js";
@@ -9,6 +9,7 @@ import { userUuid } from "../stores/stores.js";
 import { get } from "svelte/store";
 let webSocket; // updates to submissions
 
+export const submissionStore = createSubmissionStore();
 function createWebSocketConnection() {
   const wsUrl = `ws://${window.location.host}/ws/user/${get(userUuid)}`;
   webSocket = new WebSocket(wsUrl);
@@ -128,50 +129,24 @@ function createSubmissionStore() {
       const result = await submitSolutionForGrading(assignmentId, code);
       return result;
     },
-    getCorrectSubmissions: async () => {
-      return await correctSubmissionsByUser(get(userUuid));
-    },
+    // getCorrectSubmissions: async () => {
+    //   return await correctSubmissionsByUser(get(userUuid));
+    // },
     filter: (predicate) => {
       return get(submissionStore).filter(predicate);
     },
-    hasCorrectSolution: (assignment_id) => {
-      return get(submissionStore).some(
-        (submission) =>
-          submission.programming_assignment_id === assignment_id &&
-          submission.correct === true &&
-          submission.status === "processed"
-      );
-    },
-    hasPendingSolution: (assignment_id) => {
-      return get(submissionStore).some(
-        (submission) =>
-          submission.programming_assignment_id === assignment_id &&
-          submission.status === "pending"
-      );
-    },
-    hasIncorrectSolution: (assignment_id) => {
-      return get(submissionStore).some(
-        (submission) =>
-          submission.programming_assignment_id === assignment_id &&
-          submission.correct === false &&
-          submission.status === "processed"
-      );
-    },
+
     hasSubmissions: (assignment_id) => {
       return get(submissionStore).some(
         (submission) => submission.programming_assignment_id === assignment_id
       );
     },
-    getSubmissionsForAssignment: (assignment_id) => {
-      console.log(
-        `******** Getting submissions for assignment: ${assignment_id}`
-      );
+    getSubmissionsForAssignment: (assignment_id) => {      
       const filteredAndSorted = get(submissionStore)
         .filter(
           (submission) => submission.programming_assignment_id === assignment_id
         )
-        .sort((a, b) => Number.parseInt(a.id) - Number.parseInt(b.id));
-      console.log("Filtered and sorted submissions:", filteredAndSorted);
+        .sort((a, b) => Number.parseInt(a.id) - Number.parseInt(b.id));    
       return filteredAndSorted;
     },
 
@@ -183,7 +158,6 @@ function createSubmissionStore() {
   };
 }
 
-export const submissionStore = createSubmissionStore();
 
 export const resolvedAssignmentIds = derived(
   submissionStore,
@@ -191,25 +165,23 @@ export const resolvedAssignmentIds = derived(
     // Return an array of unique assignment ids that have been resolved by the user
     const resolvedIds = new Set(
       $submissionStore
-        .filter((submission) => submission.correct)
-        .map((submission) => submission.programming_assignment_id)
+      .filter((submission) => submission.correct)
+      .map((submission) => submission.programming_assignment_id)
     );
-
+    
     return Array.from(resolvedIds);
   }
 );
+
 
 export const pointsEarned = derived(submissionStore, ($submissionStore) => {
   // 100 points for each resolved assignment id
   const num = new Set(
     $submissionStore
-      .filter((submission) => submission.correct)
-      .map((submission) => submission.programming_assignment_id)
+    .filter((submission) => submission.correct)
+    .map((submission) => submission.programming_assignment_id)
   ).size;
   return 100 * num;
 });
 
-// Console log for debugging
-submissionStore.subscribe((value) => {
-  console.log("Current submission store value:", value);
-});
+
