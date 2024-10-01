@@ -126,14 +126,6 @@ function createSubmissionStore() {
     },
     submitSolution: async (assignmentId, code) => {
       const result = await submitSolutionForGrading(assignmentId, code);
-      if (result.status === "ok") {
-        update((s) => {
-          const newState = [...s, ...result.data];
-          localStorage.setItem("submissions", JSON.stringify(newState));
-          return newState;
-        });
-      }
-
       return result;
     },
     getCorrectSubmissions: async () => {
