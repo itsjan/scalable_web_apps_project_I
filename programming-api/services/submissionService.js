@@ -1,7 +1,5 @@
 import { sql } from "../database/database.js";
 
-
-
 /**
  * Submits a solution for grading.
  * When a programming assignment is submitted, the submission is stored into the database table 
