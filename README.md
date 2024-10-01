@@ -1,8 +1,17 @@
 # Designing and Building Scalable Web Applications / Course Project I
 
-This repository contains a submission Aalto University FITECH 101 course **Designing and Building Scalable Web Applications** course **project I**.
+This repository contains a submission Aalto University FITECH 101 course [Designing and Building Scalable Web Applications](https://fitech101.aalto.fi/designing-and-building-scalable-web-applications) course **project I**.
 
-## Compliance to Requirements
+- For running the project, please see [RUNNING.md](RUNNING.md).
+- For self reflection, see [REFLECTION.md](REFLECTION.md).
+
+
+![alt text](image.png)
+
+
+
+
+## Project Requirements
 
 This submission complies to all requirements including those included in the requirements for Merit.
 
