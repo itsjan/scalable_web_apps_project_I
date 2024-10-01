@@ -1,6 +1,6 @@
 <script>
     import { userUuid } from "../stores/stores.js";
-    import { selectedAssignment } from "../stores/assignments.svelte.js";
+    import { selectedAssignment } from "../stores/assignments.store.js";
     import { get } from "svelte/store";
     import { onMount } from "svelte";
     

@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { userUuid } from "../stores/stores.js";
-    import { selectedAssignment } from "../stores/assignments.svelte.js";
+    import { selectedAssignment } from "../stores/assignments.store.js";
     import * as assignmentsApi from "../lib/http-actions/assignments-api.js";
     import { submissionStore, resolvedAssignmentIds } from "../stores/submissions.store.js";
     import CodeEditor from "../components/CodeEditor.svelte";
@@ -34,22 +34,25 @@
         await fetchSubmissions();
     });
 
+    // The user clicks on one of the assignments .. 
     function selectAssignment(assignment, pageNumber) {
         if (pageNumber === 1 || pageNumber <= maxResolvedAssignmentId + 1) {
+            // Update the selectedAssignment store
             selectedAssignment.set(assignment);
+            // and update the URL in the browser location bar
             changeUrl(pageNumber);
         }
     }
 
+    // We use this to track the user's progress
+    // so that Assignments can be displayed in the correct order
     async function fetchSubmissions() {
         try {
             await submissionStore.initSubmissions();
-            console.log("Submissions fetched and store updated");
         } catch (error) {
             console.error("Error fetching submissions:", error);
         }
     }
-
     // Console log for debugging
     $: console.log("Current submission store value:", $submissionStore);
 </script>
@@ -57,6 +60,7 @@
 <div class="flex justify-center bg-inherit ">
 <ul class="timeline">
     {#each assignments as assignment, index}
+        <!-- Only show assignments the user has solved, and the next to be solved -->
         {#if index <= maxResolvedAssignmentId }
         <li>
             <hr class:bg-primary={index <= maxResolvedAssignmentId} />
@@ -88,7 +92,6 @@
                 on:click={() => selectAssignment(assignment, index + 1)}
                 class="timeline-end timeline-box cursor-pointer"
                 class:bg-primary={$selectedAssignment === assignment}
-                class:disabled={index !== 0 && index > maxResolvedAssignmentId}
             >
                 {assignment.title}
                 {#if index === maxResolvedAssignmentId}
@@ -102,12 +105,3 @@
 </ul>
 </div>
 
-
-
-<style>
-
-    .disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-</style>

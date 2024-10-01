@@ -1,5 +1,5 @@
 // assignments.js
-import { selectedAssignment } from "../../stores/assignments.svelte";
+import { selectedAssignment } from "../../stores/assignments.store.js";
 
 const getAssignments = async () => {
   try {
@@ -19,3 +19,5 @@ const getAssignments = async () => {
 };
 
 export { getAssignments };
+
+

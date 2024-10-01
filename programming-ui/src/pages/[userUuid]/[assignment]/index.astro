@@ -2,7 +2,7 @@
 import Layout from "../../../layout/Layout.astro";
 import AssignmentSelector from "../../../components/AssignmentSelector.svelte";
 import CodeEditor from "../../../components/CodeEditor.svelte";
-import { selectedAssignment } from "../../../stores/assignments.svelte.js";
+import { selectedAssignment } from "../../../stores/assignments.store.js";
 
 import { get } from "svelte/store";
 const { userUuid, assignment } = Astro.params;
@@ -15,3 +15,4 @@ selectedAssignment.set(Number(assignment));
   <AssignmentSelector client:only={"svelte"} />
   <CodeEditor code={"# Hello, world!"} client:only={"svelte"} />
 </Layout>
+
