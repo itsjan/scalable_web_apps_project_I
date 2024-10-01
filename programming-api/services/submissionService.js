@@ -58,8 +58,6 @@ const submitSolutionForGrading = async (userUuid, assignmentId, code) => {
           INNER JOIN programming_assignments as pa ON pas.programming_assignment_id = pa.id
           WHERE pas.id = ${submissionId}
         `;
-
-
     } // end of else *new submisson* 
 
     return { submissionStatus: "ok", ...result[0] };

@@ -93,9 +93,12 @@ app.post("/api/user/:userUuid/submissions/:assignmentId", async (c) => {
       code,
     );
 
-    // we have a queue of submissions. Push to Redis
-    const redisClient = await getRedisClient();
-    await redisClient.lpush("submissions", JSON.stringify(result));
+    if (result.status === 'pending') {
+      // Submission with previously seen 
+      // we have a queue of submissions. Push to Redis
+      const redisClient = await getRedisClient();
+      await redisClient.lpush("submissions", JSON.stringify(result));
+    }
 
     if (ws) {
       ws.send(JSON.stringify({ type: "submission_update", submission: result }));
