@@ -5,14 +5,26 @@
 - Docker
 - Docker Compose
 
-## Running the project
+## Deploying and running the DEVELOPMENT environment
+
+1. Open a terminal and navigate to the project directory.
+2. Run the following command:
 
 ```
 docker compose up
 ```
+3. Open a browser and navigate to http://localhost:7800
 
-The application will be available at http://localhost:7800
+## Deploying and running the PRODUCTION environment
 
+1. Open a terminal and navigate to the project directory.
+2. Run the following command:
+
+```
+docker compose -f docker-compose.prod.yml up -d
+```
+
+3. Open a browser and navigate to http://localhost:80
 
 ## Playwright tests
 
@@ -27,4 +39,4 @@ Three tests required for passing the course project are run:
 
 Requirements for Merits:
 
-- [x] There are additional Playwright tests that verify that the points shown to the user change when the user solves a programming assignment.
+- [x] (4) verify that the points shown to the user change when the user solves a programming assignment.
