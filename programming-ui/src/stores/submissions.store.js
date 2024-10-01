@@ -91,22 +91,6 @@ function createSubmissionStore() {
         console.error("Error fetching submissions:", error);
       }
     },
-    addSubmission: (submission) => {
-      update((s) => {
-        const newState = [...s, submission];
-        localStorage.setItem("submissions", JSON.stringify(newState));
-        return newState;
-      });
-    },
-    updateSubmission: (id, updates) => {
-      update((s) => {
-        const newState = s.map((item) =>
-          item.id === id ? { ...item, ...updates } : item
-        );
-        localStorage.setItem("submissions", JSON.stringify(newState));
-        return newState;
-      });
-    },
 
     addOrUpdateSubmission: (submission) => {
       update((s) => {
