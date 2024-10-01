@@ -1,7 +1,12 @@
-# version: "3.4"
-
+# Programming Assignments App
+#
+# Production configuration:
+# services have restart policies
+# persistance for postgres
+#
 volumes:
   astro_node_modules:
+  postgres_data:
 
 services:
   grader-image:
@@ -16,44 +21,51 @@ services:
       - programming-api
       - programming-ui
     ports:
-      - 7800:7800
+      - 80:7800
+    # restart unless explicitly stopped
+    restart: unless-stopped
 
   redis:
     image: redis/redis-stack:latest
+    # I am using a different image from the starter
+    # project. The image did not start properly unless
+    # the command below was commented out.
     #command: redis-server /usr/local/etc/redis/redis.conf
     #volumes:
     #  - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     expose:
       - 6379
-      - 8001
-    ports:
-      - 6379:6379
-      - 8001:8001
 
   programming-api:
-    build: programming-api
-    image: programming-api
-    restart: "no"
-    volumes:
-      - ./programming-api/:/app
-      - ./app-cache/:/app-cache
+    container_name: pap-programming-api
+    build:
+      context: programming-api
+      dockerfile: Dockerfile.prod
+    image: pap-programming-api-prod
+    restart: "on-failure"
     expose:
       - 7777
-    ports:
-      - 7777:7777
     depends_on:
       - database
       - flyway
       - redis
       - grader-api
     env_file:
-      - project.env
+      - production.env
+    deploy:
+      # start the container on a failure
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
   programming-ui:
-    build: 
+    container_name: pap-programming-ui
+    build:
       context: programming-ui
       dockerfile: Dockerfile.prod
-    image: programming-ui-prod
+    image: pap-programming-ui-prod
     restart: "on-failure"
     volumes:
       - ./programming-ui/:/app
@@ -64,28 +76,39 @@ services:
       - programming-api
 
   grader-api:
-    build: grader-api
-    image: grader-api
-    restart: "no"
+    build:
+      context: grader-api
+      dockerfile: Dockerfile.prod
+    image: pap-grader-api-prod
+    restart: "on-failure"
     volumes:
-      - ./grader-api/:/app
-      - ./app-cache/:/app-cache
       - "/var/run/docker.sock:/var/run/docker.sock"
     expose:
       - 7000
-    ports:
-      - 7001:7000
     depends_on:
       - grader-image
+    deploy:
+      # We have two replicas of the grader-api service.
+      # More replicas can be added if needed.
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
   database:
-    container_name: database-server-dab-p1-8ab01ad8-ff1f-47ff-8134-9d0f9f79820e
+    container_name: pap-database-prod
     image: postgres:14.1
-    restart: "no"
-    ports:
-      - 5432:5432
+    # restart the container unless explicitly stopped
+    restart: unless-stopped
+    expose:
+      - 5432
+    # uses a named volume for persistence
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     env_file:
-      - project.env
+      - production.env
 
   flyway:
     image: flyway/flyway:9.11.0-alpine
@@ -95,14 +118,6 @@ services:
       - ./flyway/sql/:/flyway/sql
     command: -connectRetries=60 -baselineOnMigrate=true migrate
     env_file:
-      - project.env
+      - production.env
 
-  e2e-playwright:
-    entrypoint: "/bin/true"
-    build: e2e-playwright
-    image: e2e-playwright
-    network_mode: host
-    depends_on:
-      - nginx
-    volumes:
-      - ./e2e-playwright/tests:/e2e-playwright/tests
+  # e2e-playwright not needed in production
